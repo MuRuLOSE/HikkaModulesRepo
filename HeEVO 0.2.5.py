@@ -139,9 +139,9 @@ class HeEVO(loader.Module): # думал назвать HuEVO - типо хуе�
 
     async def client_ready(self):
         if self.config["bursborauto"] == True:
-            bursborauto(self,None)
+            self.bursborauto(self,None)
         if self.config["burzaprauto"] == True:
-            burzaprauto(self,None)
+            self.burzaprauto(self,None)
         if self.config["autouplvl"] == True:
           self.client.send_message("me","Молодец")
         if self.config["hi"] == True:
