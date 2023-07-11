@@ -138,11 +138,11 @@ class HeEVO(loader.Module): # думал назвать HuEVO - типо хуе�
     			await response.click(1)
     async def client_ready(self):
         	if self.config["bursborauto"] == True:
-        		HeEVO.bursborauto(self,None)
+        		bursborauto(self,None)
         	if self.config["burzaprauto"] == True:
-        		HeEVO.burzaprauto(self,None)
+        		burzaprauto(self,None)
         	if self.config["autouplvl"] == True:
-        		HeEVO.autouplvl(self,None)
+        		autouplvl(self,None)
         	if self.config["hi"] == True:
         		self.message2 = await self.client.send_message("me","<b><emoji document_id=5278312084327636289>❤️\u200d🔥</emoji> Приветик! Спасибо за установку модуля HeEVO</b>\n\nЯ сейчас рад что вы видите это сообщение, потому что вы установили мой модуль <b>HeEVO</b>\n\nЭто сообщение будет отправлено всего один раз, и только в избранное.\n\n<emoji document_id=5362088337718909649>\U0001fae2</emoji> <b>Ладно, не буду засорять избранное, можешь удалять) Пока 🥰")
         		self.message1 = await self.client.send_message("me","<emoji document_id=5271531301629866501>🔶</emoji><emoji document_id=5273719407078552078>🔶</emoji><emoji document_id=5273786202409938995>🔶</emoji><emoji document_id=5271531301629866501>🔶</emoji><emoji document_id=5271508486763589107>🔶</emoji><emoji document_id=5271981431382355955>🔶</emoji><emoji document_id=5271871458744741066>‼️</emoji><emoji document_id=5274110571225034474>🔶</emoji>\n<emoji document_id=5271508486763589107>🔶</emoji><emoji document_id=5273924616320987261>🔶</emoji><emoji document_id=5273913397866410397>🔶</emoji><emoji document_id=5271871458744741066>🔶</emoji><emoji document_id=5273860183221612720>🔶</emoji><emoji document_id=5271871458744741066>🔶</emoji><emoji document_id=5271567770197175320>🔶</emoji><emoji document_id=5271694871164368298>🔶</emoji><emoji document_id=5274063219210596376>🔶</emoji><emoji document_id=5271871458744741066>🔶</emoji><emoji document_id=5273924616320987261>🔶</emoji><emoji document_id=5271851551571326099>🔶</emoji><emoji document_id=5273730853166396176>🔶</emoji><emoji document_id=5271972682533974848>🔶</emoji><emoji document_id=5274030044883201235>🔶</emoji>")
