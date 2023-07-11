@@ -80,7 +80,7 @@ class HeEVO(loader.Module): # думал назвать HuEVO - типо хуе�
     
 
     @loader.command()
-    async def autouplvl(self, message):
+    async def Autouplvl(self, message):
     	'''Включить автоповышение уровня'''
     	interval = self.config['autouplvl_interval']
     	self.config['autouplvl'] = not self.config['autouplvl']
