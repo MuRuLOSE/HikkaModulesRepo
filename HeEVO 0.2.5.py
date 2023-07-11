@@ -100,7 +100,7 @@ class HeEVO(loader.Module): # думал назвать HuEVO - типо хуе�
     			if find == 2:
     				await response.click(0)
     @loader.command()
-    async def Bautosbor(self, message):
+    async def bautosbor(self, message):
     	''' - Включить автосбор ресурсов с бура'''
     	interval = self.config['interval_bursborauto']
     	self.config['bursborauto'] = not self.config['bursborauto']
@@ -119,7 +119,7 @@ class HeEVO(loader.Module): # думал назвать HuEVO - типо хуе�
     			await response.click(0)
     		
     @loader.command()
-    async def Bautozapr(self, message):
+    async def bautozapr(self, message):
     	''' - Включить автозаправку бура'''
     	interval = self.config['interval_burzapravauto']
     	self.config['burzaprauto'] = not self.config["burzaprauto"]
