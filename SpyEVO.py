@@ -78,7 +78,7 @@ class SpyEVO(loader.Module):
     	await utils.answer(message,f"✉ <b>Конверты:</b> <code>{convert}</code>\n🧧 <b>Редкие конверты:</b> <code>{r_convert}</code>\n📦 <b>Кейсы:</b> <code>{case}</code>\n🗳 <b>Редкие кейсы:</b> <code>{r_case}</code>\n🕋 <b>Мифические кейсы:</b> <code>{mif}</code>\n💎 <b>Кристальные кейсы</b> <code>{crystal}</code>\n🌌<b>Звездные Кейсы:</b> <code>{zv}</code>\n\n🎆 <b>Плазма:</b> <code>{plasma}</code>")
     
     @loader.command()
-    async def clear_spy(self,mesaage):
+    async def clear_spy(self,message):
     	'''Очистка базы данных (всех кейсов и тд)'''
     	await self.inline.form(
     	    text="Вы уверены что хотите очистить базу данных модуля?",
