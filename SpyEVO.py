@@ -7,7 +7,7 @@
 
 # Not licensed
 # meta developer: @bruhHikkaModules 
-__version__ = (0,0,5)
+__version__ = (0,1,0)
 
 from telethon.tl.types import Message, ChatAdminRights
 from telethon import functions
