@@ -14,6 +14,7 @@ from telethon import functions
 import asyncio
 from .. import loader, utils
 import re
+from ..inline.types import InlineCall
 
 @loader.tds
 class SpyEVO(loader.Module): 
@@ -33,6 +34,7 @@ class SpyEVO(loader.Module):
     	mif = self.get("mif",0)
     	crystal = self.get("crystal",0)
     	plasma = self.get("plasma",0)
+    	zv = self.get("zv",0)
     	
     	if message.chat_id == 5522271758 and message.text == "✉ Ты нашел(ла) конверт.":
     		converts += 1
@@ -55,6 +57,9 @@ class SpyEVO(loader.Module):
     	if message.chat_id == 5522271758 and "🎆 Ты нашел(ла) 1 плазму" in message.text:
     		plasma += 1
     		self.set("plasma",plasma)
+    	if message.chat_id == 5522271758 and "💫" in message.text:
+    		zv += 1
+    		self.set("zv",zv)
     	if message.chat_id == 5522271758 and "🎆 Ты нашел(ла) 2 плазмы" in message.text:
     		plasma += 2
     		self.set("plasma",plasma)
@@ -68,5 +73,38 @@ class SpyEVO(loader.Module):
     	r_case = self.get("r_case",0)
     	mif = self.get("mif",0)
     	crystal = self.get("crystal",0)
+    	zv = self.get("zv",0)
     	plasma = self.get("plasma",0)
-    	await utils.answer(message,f"✉ <b>Конверты:</b> <code>{convert}</code>\n🧧 <b>Редкие конверты:</b> <code>{r_convert}</code>\n📦 <b>Кейсы:</b> <code>{case}</code>\n🗳 <b>Редкие кейсы:</b> <code>{r_case}</code>\n🕋 <b>Мифические кейсы:</b> <code>{mif}</code>\n💎 <b>Кристальные кейсы</b> <code>{crystal}</code>\n\n🎆 <b>Плазма:</b> <code>{plasma}</code>")
+    	await utils.answer(message,f"✉ <b>Конверты:</b> <code>{convert}</code>\n🧧 <b>Редкие конверты:</b> <code>{r_convert}</code>\n📦 <b>Кейсы:</b> <code>{case}</code>\n🗳 <b>Редкие кейсы:</b> <code>{r_case}</code>\n🕋 <b>Мифические кейсы:</b> <code>{mif}</code>\n💎 <b>Кристальные кейсы</b> <code>{crystal}</code>\n🌌<b>Звездные Кейсы:</b> <code>{zv}</code>\n\n🎆 <b>Плазма:</b> <code>{plasma}</code>")
+    
+    @loader.command()
+    async def clear_spy(self,mesaage):
+    	'''Очистка базы данных (всех кейсов и тд)'''
+    	await self.inline.form(
+    	    text="Вы уверены что хотите очистить базу данных модуля?",
+    	    message=message,
+    	    reply_markup =[
+    	        [
+    	            {
+    	                "text": "Да",
+    	                "callback": self.cleardb,
+    	            },
+    	            {
+    	                "text": "Нет",
+    	                "action": "close",
+    	            },
+    	        ]
+    	    ]
+    	    )
+    	                
+    async def cleardb(self, call: InlineCall):
+    	# пака статистика
+    	self.set("converts",0)
+    	self.set("r_converts",0)
+    	self.set("case",0)
+    	self.set("r_case",0)
+    	self.set("mif",0)
+    	self.set("crystal",0)
+    	self.set("plasma",0)
+    	self.set("zv",0)
+    	call.edit(call,"Статистика о кейсах и плазме очищена")
