@@ -35,6 +35,8 @@ class SpyEVO(loader.Module):
     	crystal = self.get("crystal",0)
     	plasma = self.get("plasma",0)
     	zv = self.get("zv",0)
+    	scrap = self.get("scrap",0)
+    	medals = self.get("medals",0)
     	
     	if message.chat_id == 5522271758 and message.text == "✉ Ты нашел(ла) конверт.":
     		converts += 1
@@ -63,6 +65,20 @@ class SpyEVO(loader.Module):
     	if message.chat_id == 5522271758 and "🎆 Ты нашел(ла) 2 плазмы" in message.text:
     		plasma += 2
     		self.set("plasma",plasma)
+    	if message.chat_id == 5522271758 and "Медаль" in message.text:
+    		pattern = "Медаль +(.*?)</b>"
+    		match = re.search(pattern, message.text, re.DOTALL)
+    		if match:
+    			medali = int(match.group(1))
+    			medals += medali
+    			self.set("medals",medals)
+    	if message.chat_id == 5522271758 and "Скрап" in message.text:
+    		pattern = "Скрап +(.*?)</b>"
+    		match = re.search(pattern, message.text, re.DOTALL)
+    		if match:
+    			scrapi = int(match.group(1))
+    			scrap += scrapi
+    			self.set("scrap",scrap)
  
     @loader.command()
     async def show_spy(self,message):
@@ -75,7 +91,9 @@ class SpyEVO(loader.Module):
     	crystal = self.get("crystal",0)
     	zv = self.get("zv",0)
     	plasma = self.get("plasma",0)
-    	await utils.answer(message,f"✉ <b>Конверты:</b> <code>{convert}</code>\n🧧 <b>Редкие конверты:</b> <code>{r_convert}</code>\n📦 <b>Кейсы:</b> <code>{case}</code>\n🗳 <b>Редкие кейсы:</b> <code>{r_case}</code>\n🕋 <b>Мифические кейсы:</b> <code>{mif}</code>\n💎 <b>Кристальные кейсы</b> <code>{crystal}</code>\n🌌<b>Звездные Кейсы:</b> <code>{zv}</code>\n\n🎆 <b>Плазма:</b> <code>{plasma}</code>")
+    	medals = self.get("medals",0)
+    	scrap = self.get("scrap",0)
+    	await utils.answer(message,f"<b>💼 Ваши Кейсы (будем расстягивать для красоты):</b>\n\n✉ <b>Конверты:</b> <code>{convert}</code>\n🧧 <b>Редкие конверты:</b> <code>{r_convert}</code>\n📦 <b>Кейсы:</b> <code>{case}</code>\n🗳 <b>Редкие кейсы:</b> <code>{r_case}</code>\n🕋 <b>Мифические кейсы:</b> <code>{mif}</code>\n💎 <b>Кристальные кейсы</b> <code>{crystal}</code>\n🌌<b>Звездные Кейсы:</b> <code>{zv}</code>\n\n<b>🏺 Ресурсы:</b>\n\n🎆 <b>Плазма:</b> <code>{plasma}</code>\n\n<b>👺 Боссы:</b>\n\n🎖 <b>Медали:</b> <code>{medals}</code>\n🔩 <b>Скрап:</b> <code>{scrap}</code>")
     
     @loader.command()
     async def clear_spy(self,message):
