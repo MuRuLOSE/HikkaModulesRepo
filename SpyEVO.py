@@ -7,7 +7,7 @@
 
 # Not licensed
 # meta developer: @bruhHikkaModules 
-__version__ = (0,1,0)
+__version__ = (0,1,5)
 
 from telethon.tl.types import Message, ChatAdminRights
 from telethon import functions
@@ -50,10 +50,10 @@ class SpyEVO(loader.Module):
     	if message.chat_id == 5522271758 and message.text == "🗳 Ты нашел(ла) Редкий Кейс!":
     		r_case += 1
     		self.set("r_case",r_case)
-    	if message.chat_id == 5522271758 and message.text == "🕋 Ты нашел(ла) Мифический Кейс!":
+    	if message.chat_id == 5522271758 and message.raw_text == "🕋 Ты нашел(ла) Мифический Кейс!":
     		mif += 1
     		self.set("mif",mif)
-    	if message.chat_id == 5522271758 and message.text == "💎 Ты нашел(ла) Кристальный Кейс!":
+    	if message.chat_id == 5522271758 and message.raw_text == "💎 Ты нашел(ла) Кристальный Кейс!":
     		crystal += 1
     		self.set("crystal",crystal)
     	if message.chat_id == 5522271758 and "🎆 Ты нашел(ла) 1 плазму" in message.text:
