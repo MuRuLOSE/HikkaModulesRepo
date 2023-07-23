@@ -28,5 +28,5 @@ class factorial(loader.Module):
     		args = int(utils.get_args_raw(message))
     	except ValueError:
     		await utils.answer(message,"Введи просто число, и всё!")
-    	b = args**args
+    	b = args**(args-1)
     	await utils.answer(message,f"Факториал числа {args}: <code>{b}</code>")
