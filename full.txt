@@ -1,6 +1,6 @@
-SpyEVO
-ChannelCheck
-factorial
-HeEVO
-AutoShaxta
-PerevodLimitsX
+SpyEVO-beta
+ChannelCheck-beta
+factorial-beta
+HeEVO-beta
+AutoShaxta-beta
+PerevodLimitsX-beta
