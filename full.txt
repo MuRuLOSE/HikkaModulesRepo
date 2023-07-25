@@ -3,3 +3,4 @@ ChannelCheck
 factorial
 HeEVO
 AutoShaxta
+PerevodLimitsX
