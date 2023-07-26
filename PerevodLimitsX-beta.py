@@ -21,6 +21,9 @@ class PerevodLimitsX(loader.Module):
         "name": "PerevodLimitsX",
         "time_perevod": "Задержка перевода"
     }
+
+    async def client_ready(self, client, db):
+        self._db = db
     
     def __init__(self):
         self.config = loader.ModuleConfig(
@@ -31,6 +34,7 @@ class PerevodLimitsX(loader.Module):
                 validator=loader.validators.Float()
             )
         )
+    
         
     @loader.command()
     async def perevodx(self,message):
@@ -39,29 +43,31 @@ class PerevodLimitsX(loader.Module):
      async with self.client.conversation("@mine_evo_bot") as conv:
         await conv.send_message("б")
         res = await conv.get_response()
-        pattern = "<b>Баланс:</b>(*.?)$"
+        pattern = "<b>Баланс:</b>  (.*?)\n"
         match = re.search(pattern, res.text,re.DOTALL)
         if match:
-        	self.set("balance",match.group(1))
-        balance = self.get("balance",None)
+        	balance = match.group(1)
+        balance = match.group(1)
         await conv.send_message(f"Перевести {args[0]} {balance}")
         res = await conv.get_response()
-        pattern = ("<code>(.\*?)$")
-        match = re.search(pattern, res.text, re.DOTALL)
-        conv.cancel()
+        pattern = "\n(.*?)$"
+        match = re.search(pattern, res.message, re.DOTALL)
         if match:
-        	self.set("sum",match.group(1))
-        sum = self.get("sum",None)
+        	sum = match.group(1)
+        else:
+        	хуй
+
+        conv.cancel()
         ost = 0
-        self.set("full",args[1])
+        self._db.set(__name__,"full",args[1])
         for i in range(int(args[1])):
-        	self.get("ost",0)
+        	self._db.get(__name__,"ost",0)
         	await self.client.send_message("@mine_evo_bot",f"Перевести {args[0]} {sum}")
         	await asyncio.sleep(self.config["time_perevod"])
         	ost += 1
-        	self.set("ost",ost)
-        self.set("ost",0)
-        self.set("full",0)
+        	self._db.set(__name__,"ost",ost)
+        self._db.set(__name__,"ost",0)
+        self._db.set(__name__,"full",0)
        	
        	
   
@@ -74,7 +80,6 @@ class PerevodLimitsX(loader.Module):
     @loader.command()
     async def limits(self,message):
     	''' - Посмотреть сколько осталось лимитов перевести'''
-    	full = self.get("full",0)
-    	ost = self.get("ost",0)
+    	full = self._db.get("full",0)
+    	ost = self._db.get("ost",0)
     	await utils.answer(message,f"Осталось: <code>{ost}/{full}</code>")
- 
