@@ -40,34 +40,34 @@ class PerevodLimitsX(loader.Module):
         await conv.send_message("б")
         res = await conv.get_response()
         pattern = "<b>Баланс:</b>(*.?)$"
-        match = re.search(pattern, res.text)
+        match = re.search(pattern, res.text,re.DOTALL)
         if match:
-        	balance = match.group(1)
-        	await conv.send_message(f"Перевести {args[0]} {balance}")
-        	res = await conv.get_response()
-        	pattern = ("<code>(.*?)$")
-        	match = re.search(pattern, res.text, re.DOTALL)
-        	conv.cancel()
-        	if match:
-        		sum = match.group(1)
-        		ost = 0
-        		self.set("full",args[1])
-        		for i in range(int(args[1])):
-        			self.get("ost",0)
-        			await self.client.send_message("@mine_evo_bot",f"Перевести {args[0]} {sum}")
-        			await asyncio.sleep(self.config["time_perevod"])
-        			ost += 1
-        			self.set("ost",ost)
-        		self.set("ost",0)
-        		self.set("full",0)
-        else:
-        	aishsn
+        	self.set("balance",match.group(1))
+        balance = self.get("balance",None)
+        await conv.send_message(f"Перевести {args[0]} {balance}")
+        res = await conv.get_response()
+        pattern = ("<code>(.\*?)$")
+        match = re.search(pattern, res.text, re.DOTALL)
+        conv.cancel()
+        if match:
+        	self.set("sum",match.group(1))
+        sum = self.get("sum",None)
+        ost = 0
+        self.set("full",args[1])
+        for i in range(int(args[1])):
+        	self.get("ost",0)
+        	await self.client.send_message("@mine_evo_bot",f"Перевести {args[0]} {sum}")
+        	await asyncio.sleep(self.config["time_perevod"])
+        	ost += 1
+        	self.set("ost",ost)
+        self.set("ost",0)
+        self.set("full",0)
        	
        	
   
     
     @loader.command()
-    async def faq(self,message):
+    async def perevfaq(self,message):
       ''' - FAQ по этому модулю'''
       await utils.answer(message, "Этот модуль предназначен для новой системы перевода лимитов, обновлятся лимиты по мере обновления уровня не будет, потому что в этом и был смысл убирания лимитов.\nРекомендуется запускать не больше одного перевода. Иначе это поломает счетчик")
      
