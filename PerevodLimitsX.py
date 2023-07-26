@@ -73,7 +73,7 @@ class PerevodLimitsX(loader.Module):
         pattern = "\n(.*?)$"
         match = re.search(pattern, res.message, re.DOTALL)
         if match:
-        	sum = match.group(1)
+        	sum = match.group(1).replace("$","")
 
         conv.cancel()
         ost = 0
@@ -109,5 +109,5 @@ class PerevodLimitsX(loader.Module):
     	full = self.get("full",0)
     	time = self.config["time_perevod"]
     	ost = self.get("ost",0)
-    	r = (int(full)-int(ost)-1)*time
+    	r = (int(full)-int(ost)+1)*time
     	await utils.answer(message,f"<b>⏱ Вы будете переводить</b> <code>{r} сек</code>")
