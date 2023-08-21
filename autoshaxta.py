@@ -36,13 +36,13 @@ class AutoShaxta(loader.Module):
         
     @loader.watcher()
     async def watcher(self,message):
-    	if message.chat_id == 5522271758 and "🔓 Открыта новая шахта:" in message.text:
-    		pattern = "Открыта новая шахта: <code>(.*?)</code>"
+    	if message.chat_id == 5522271758 and "🔓 Открыта новая шахта:" in message.raw_text:
+    		pattern =  Открыта новая шахта: <code>(.*?)</code>"
     		match = re.search(pattern, message.text, re.DOTALL)
     		if match:
     			mine = match.group(1)
     		if self.config["status_shaxta"]:
-    			self.client.send_message("@mine_evo_bot",f"mine")
+    			self.client.send_message("@mine_evo_bot",mine)
     @loader.command()
     async def auto_shaxt(self,message):
     	''' - Включить выключить авто переключение шахты'''
