@@ -4,3 +4,4 @@ factorial
 HeEVO
 AutoShaxta
 PerevodLimitsX
+autoreader
