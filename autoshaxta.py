@@ -42,7 +42,7 @@ class AutoShaxta(loader.Module):
     		if match:
     			mine = match.group(1)
     		if self.config["status_shaxta"]:
-    			self.client.send_message("@mine_evo_bot",mine)
+    			await self.client.send_message("@mine_evo_bot",mine)
     @loader.command()
     async def auto_shaxt(self,message):
     	''' - Включить выключить авто переключение шахты'''
