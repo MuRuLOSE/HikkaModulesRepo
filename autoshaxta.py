@@ -37,7 +37,7 @@ class AutoShaxta(loader.Module):
     @loader.watcher()
     async def watcher(self,message):
     	if message.chat_id == 5522271758 and "🔓 Открыта новая шахта:" in message.raw_text:
-    		pattern =  Открыта новая шахта: <code>(.*?)</code>"
+    		pattern =  "Открыта новая шахта: <code>(.*?)</code>"
     		match = re.search(pattern, message.text, re.DOTALL)
     		if match:
     			mine = match.group(1)
