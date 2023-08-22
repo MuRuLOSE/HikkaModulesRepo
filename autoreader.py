@@ -69,10 +69,8 @@ class Autoreader(loader.Module):
 
         if str(args).startswith("-100"):
             args = int(str(value)[4:])
-        else:
-            await self.client.send_read_acknowledge(int(args),clear_mentions=True)
 
-        if args > 2**64 - 1 or args < 0:
+        elif args > 2**64 - 1 or args < 0:
             await utils.answer(message,"Неверный айди!")
         else:
             await self.client.send_read_acknowledge(int(args),clear_mentions=True)
@@ -90,10 +88,8 @@ class Autoreader(loader.Module):
                 
             if str(args).startswith("-100"):
                 value = int(str(args)[4:])
-            else:
-                await self.client.send_read_acknowledge(int(args),clear_mentions=True)
                 
-            if args > 2**64 - 1 or args < 0:
+            elif args > 2**64 - 1 or args < 0:
                 await utils.answer(message,"Неверный айди!")
             else:
                 await self.client.send_read_acknowledge(int(args),clear_mentions=True)
