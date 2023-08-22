@@ -1,7 +1,7 @@
 from telethon.tl.types import Message
 from .. import loader,utils
 
-# meta developer <b>@BruhHikkaModules @evolut</b> 
+# meta developer @BruhHikkaModules
 
 @loader.tds
 class Autoreader(loader.Module):
