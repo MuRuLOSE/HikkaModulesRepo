@@ -54,3 +54,49 @@ class Autoreader(loader.Module):
         hg = ov.replace(",","\n")
         chats = f"👁 <b>Авто просматриваемые чаты:</b>\n{hg}"
         await utils.answer(message,chats)
+
+    @loader.command()
+    async def set_autoread(self,message):
+        ''' - [Айди] Добавить / Удалить чат из списка авто читаемых
+            p.s -100 к началу айди у каналов и чатов'''
+        args = utils.get_args_raw(message)
+
+        try:
+            value = int(str(value).strip())
+        except Exception:
+            await utils.answer(message,"Неверный айди!")
+
+        if str(value).startswith("-100"):
+            value = int(str(value)[4:])
+        else:
+            await self.client.send_read_acknowledge(int(args),clear_mentions=True)
+
+        if value > 2**64 - 1 or value < 0:
+            await utils.answer(message,"Неверный айди!")
+        else:
+            await self.client.send_read_acknowledge(int(args),clear_mentions=True)
+        
+    @loader.command()
+    async def read(self,message):
+        ''' - [Айди \ Ничего] Прочитать все сообщения в чате'''
+        args = utils.get_args_raw(message)
+        if args != "":
+            try:
+                value = int(str(value).strip())
+            except Exception:
+                await utils.answer(message,"Неверный айди!")
+                
+            if str(value).startswith("-100"):
+                value = int(str(value)[4:])
+            else:
+                await self.client.send_read_acknowledge(int(args),clear_mentions=True)
+                
+            if value > 2**64 - 1 or value < 0:
+                await utils.answer(message,"Неверный айди!")
+            else:
+                await self.client.send_read_acknowledge(int(args),clear_mentions=True)
+        else:
+            await self.client.send_read_acknowledge(message.chat_id,clear_mentions=True)
+            await message.delete()
+
+    
