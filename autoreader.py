@@ -24,7 +24,7 @@ class Autoreader(loader.Module):
     
     @loader.watcher()
     async def watcher(self,message):
-        if str(message.chat_id) in self._chats:
+        if message.chat_id in self._chats:
             message_id = message.id
             await self.client.send_read_acknowledge(message.chat_id,clear_mentions=True)
 
