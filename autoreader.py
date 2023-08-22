@@ -59,19 +59,20 @@ class Autoreader(loader.Module):
     async def set_autoread(self,message):
         ''' - [Айди] Добавить / Удалить чат из списка авто читаемых
             p.s -100 к началу айди у каналов и чатов'''
+        value = 0
         args = utils.get_args_raw(message)
 
         try:
-            value = int(str(value).strip())
+            value = int(str(args).strip())
         except Exception:
             await utils.answer(message,"Неверный айди!")
 
-        if str(value).startswith("-100"):
-            value = int(str(value)[4:])
+        if str(args).startswith("-100"):
+            args = int(str(value)[4:])
         else:
             await self.client.send_read_acknowledge(int(args),clear_mentions=True)
 
-        if value > 2**64 - 1 or value < 0:
+        if args > 2**64 - 1 or args < 0:
             await utils.answer(message,"Неверный айди!")
         else:
             await self.client.send_read_acknowledge(int(args),clear_mentions=True)
@@ -79,19 +80,20 @@ class Autoreader(loader.Module):
     @loader.command()
     async def read(self,message):
         ''' - [Айди \ Ничего] Прочитать все сообщения в чате'''
-        args = utils.get_args_raw(message)
+        value = 0
+        args = int(utils.get_args_raw(message))
         if args != "":
             try:
-                value = int(str(value).strip())
+                value = int(str(args.strip()))
             except Exception:
                 await utils.answer(message,"Неверный айди!")
                 
-            if str(value).startswith("-100"):
-                value = int(str(value)[4:])
+            if str(args).startswith("-100"):
+                value = int(str(args)[4:])
             else:
                 await self.client.send_read_acknowledge(int(args),clear_mentions=True)
                 
-            if value > 2**64 - 1 or value < 0:
+            if args > 2**64 - 1 or args < 0:
                 await utils.answer(message,"Неверный айди!")
             else:
                 await self.client.send_read_acknowledge(int(args),clear_mentions=True)
