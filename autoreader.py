@@ -1,6 +1,7 @@
 from telethon.tl.types import Message
 from .. import loader,utils
 
+__version__ = (0,1,5)
 # meta developer: @BruhHikkaModules
 
 @loader.tds
