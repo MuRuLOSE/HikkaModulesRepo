@@ -5,3 +5,4 @@ HeEVO
 AutoShaxta
 PerevodLimitsX
 autoreader
+youtubesearcher
