@@ -45,8 +45,8 @@ class ReplaceWords(loader.Module):
     @loader.watcher()
     async def watcher(self,message):
         words = self.get("words",[])
-        me = await self.client.get_me()
-        if message.text.lower() in words and self.config["status"] and message.user_id == me.id:
+        me = await self.client.get_me(id)
+        if message.text.lower() in words and self.config["status"] and message.from_id == me.user_id:
             word = self.get(message.text.lower(),None)
             await utils.answer(message,word)
 
