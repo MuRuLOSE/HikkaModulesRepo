@@ -1,7 +1,7 @@
 from hikkatl.types import Message
 from .. import loader, utils 
 
-
+# meta developer: @BruhHikkaModules
 @loader.tds
 class ReplaceWords(loader.Module):
     """Replaces words"""
