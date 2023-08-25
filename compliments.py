@@ -3,6 +3,7 @@ from .. import loader, utils
 import aiohttp
 import os
 # requires: aiohttp
+# meta developer: @BruhHikkaModules
 
 
 @loader.tds
