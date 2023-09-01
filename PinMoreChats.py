@@ -14,7 +14,7 @@ class PinMoreChats(loader.Module):
     
     strings = {
         "name": "PinMoreChats",
-        "_cls_doc": " - Allows you to bookmark more than 5 or 10 chats (.pmcfaq - to find out more information)",
+        "_cls_doc": " - Allows you to bookmark more than 5 or 10 chats (<b>WARNING! IT DOES NOT PIN CHATS IN TELEGRAM, IT JUST MAKES A LIST OF YOUR CHATS ANCHORED BY THIS MODULE, REMINDER, USERBOT CAN NO MORE THAN YOU CAN</b>)",
         "added": "<b> <emoji document_id=5197688912457245639>✅</emoji> Added chat <code>{}</code> <code>{}</code> </b>",
         "aleardy_in": "<b> <emoji document_id=5440660757194744323>‼️</emoji> This chat is already in the pinned</b>",
         "aleardy_not_in": "<b> <emoji document_id=5440660757194744323>‼️</emoji> This chat is not in the pinned</b>",
@@ -22,12 +22,12 @@ class PinMoreChats(loader.Module):
         "pinned": "<b>Pinned chats:</b>\n\n"
     }
     strings_ru = {
-        "_cls_doc": "Позволяет закрепить больше чем 5 или 10 чатов (.pmcfaq - чтобы узнать больше информации)",
+        "_cls_doc": "Позволяет закрепить больше чем 5 или 10 чатов (<b>ПРЕДУПРЕЖДЕНИЕ! ОНО НЕ ЗАКРЕПЛЯЕТ ЧАТЫ В ТЕЛЕГРАММЕ, А ПРОСТО ДЕЛАЕТ СПИСОК ИЗ ВАШИХ ЧАТОВ ЗАКРЕПЛЁННЫМ ЭТИМ МОДУЛЕМ, НАПОМИНАЮ, ЮЗЕРБОТ МОЖЕТ НЕ БОЛЬШЕ ЧЕМ ВЫ</b>)",
         "added": "<b> <emoji document_id=5197688912457245639>✅</emoji> Добавлен чат <code>{}</code> <code>{}</code> </b>",
         "aleardy_in": "<b> <emoji document_id=5440660757194744323>‼️</emoji> Этот чат уже есть в закрепленных</b>",
         "aleardy_not_in": "<b> <emoji document_id=5440660757194744323>‼️</emoji> Этого чата нет в закрепленных</b>",
         "deleted": "<b> <emoji document_id=5447644880824181073>⚠️</emoji> Чат удалён из закреплённых</b>",
-        "pinned": "<b>Закреплённые чаты:</b>\n\n"
+        "pinned": "<b>Закреплённые чаты:</b>\n\n",
     }
 
     @loader.command(
@@ -104,6 +104,14 @@ class PinMoreChats(loader.Module):
             chats += f"<a href=tg://privatepost?channel={chat}&post={max_message_id}>{name}</a>\n"
         
         await utils.answer(message,self.strings("pinned") + chats) # Почему через плюс? Потому что f-string ругается SyntaxError: f-string: unmatched '('
+
+
+    @loader.command(
+        ru_doc = " - FAQ по модулю"
+    )
+    async def pmcfaq(self,message):
+        ''' - FAQ for module'''
+
         
         
 
