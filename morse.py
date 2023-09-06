@@ -1,7 +1,7 @@
 from hikkatl.types import Message
 from .. import loader, utils
 
-# meta developer: @BruhHikkaModules
+
 @loader.tds
 class Morse(loader.Module):
     """ - Decode and Encode morse code"""
@@ -31,6 +31,8 @@ class Morse(loader.Module):
         for char in text:
             if char in morse_code:
                 result.append(morse_code[char])
+            else:
+                result.append(char)
         await utils.answer(message,' '.join(result))
 
     @loader.command(ru_doc=" - [Текст] - Переводит из азбуки морзе в текст")
