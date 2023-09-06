@@ -1,6 +1,7 @@
 from hikkatl.types import Message
 from .. import loader, utils
 
+__version__ = (1,0,55)
 
 @loader.tds
 class Morse(loader.Module):
