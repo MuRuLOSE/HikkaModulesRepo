@@ -1,8 +1,8 @@
 from hikkatl.types import Message
 from .. import loader, utils
 
-__version__ = (1,0,55)
-
+__version__ = (0,3.14,404)
+# meta developer: @BruhHikkaModules
 @loader.tds
 class Morse(loader.Module):
     """ - Decode and Encode morse code"""
@@ -60,5 +60,7 @@ class Morse(loader.Module):
         for morse_char in morse_chars:
             if morse_char in morse_code:
                 result.append(morse_code[morse_char])
+            else:
+                result.append(morse_char)
 
         await utils.answer(message,''.join(result))
