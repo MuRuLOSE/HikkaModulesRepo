@@ -44,6 +44,8 @@ class TextFilters(loader.Module):
                         await message.edit(message.text.capitalize())
                     except Exception:
                         pass
+                elif filter_txt == "off":
+                    pass # Ну а чо делать
 
         except AttributeError:
             pass # Ну это херня с ивентами, поэтому да
@@ -51,7 +53,7 @@ class TextFilters(loader.Module):
     async def filter_ch(self, message: Message):
         """ - [lower / capitalize / upper / off] - Chose filter"""
         args = utils.get_args_raw(message)
-        if args.lower() not in ["lower","capitalize","upper"]:
+        if args.lower() not in ["lower","capitalize","upper","off"]:
             await utils.answer(message,self.strings("wrong"))
         else:
             await utils.answer(message,self.strings("correct").format(args))
