@@ -28,13 +28,23 @@ class TextFilters(loader.Module):
                 filter_txt = self.get("filter","Dont care")
 
                 if filter_txt == "lower":
-                    await message.edit(message.text.lower())
+                    try:
+                        await message.edit(message.text.lower())
+                    except Exception:
+                        pass 
 
                 elif filter_txt == "upper":
-                    await message.edit(message.text.upper())
+                    try:
+                        await message.edit(message.text.upper())
+                    except Exception:
+                        pass
             
                 elif filter_txt == "capitalize":
-                    await message.edit(message.text.capitalize())
+                    try:
+                        await message.edit(message.text.capitalize())
+                    except Exception:
+                        pass
+                    
         except AttributeError:
             pass # Ну это херня с ивентами, поэтому да
     @loader.command(ru_doc=" - [lower / capitalize / upper] - Выбрать фильтр")
@@ -44,5 +54,5 @@ class TextFilters(loader.Module):
         if args.lower() not in ["lower","capitalize","upper"]:
             await utils.answer(message,self.strings("wrong"))
         else:
-            await utils.answer(message,self.strings("correct"))
+            await utils.answer(message,self.strings("correct").format(args))
             self.set("filter",args.lower())
