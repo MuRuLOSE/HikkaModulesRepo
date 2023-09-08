@@ -23,18 +23,20 @@ class TextFilters(loader.Module):
     @loader.watcher()
     async def watcher(self,message):
         me = await self.client.get_me(id)
-        if message.from_id == me.user_id and message.text:
-            filter_txt = self.get("filter","Dont care")
+        try:
+            if message.from_id == me.user_id and message.text:
+                filter_txt = self.get("filter","Dont care")
 
-            if filter_txt == "lower":
-                await message.edit(message.text.lower())
+                if filter_txt == "lower":
+                    await message.edit(message.text.lower())
 
-            elif filter_txt == "upper":
-                await message.edit(message.text.upper())
+                elif filter_txt == "upper":
+                    await message.edit(message.text.upper())
             
-            elif filter_txt == "capitalize":
-                await message.edit(message.text.capitalize())
-
+                elif filter_txt == "capitalize":
+                    await message.edit(message.text.capitalize())
+        except AttributeError:
+            pass # Ну это херня с ивентами, поэтому да
     @loader.command(ru_doc=" - [lower / capitalize / upper] - Выбрать фильтр")
     async def filter_ch(self, message: Message):
         """ - [lower / capitalize / upper] - Chose filter"""
