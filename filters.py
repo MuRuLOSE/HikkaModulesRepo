@@ -41,7 +41,7 @@ class TextFilters(loader.Module):
     async def filter_ch(self, message: Message):
         """ - [lower / capitalize / upper] - Chose filter"""
         args = utils.get_args_raw(message)
-        if args.lower() not in [lower,capitalize,upper]:
+        if args.lower() not in ["lower","capitalize","upper"]:
             await utils.answer(message,self.strings("wrong"))
         else:
             await utils.answer(message,self.strings("correct"))
