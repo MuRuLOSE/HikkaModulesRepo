@@ -36,9 +36,9 @@ class TextFilters(loader.Module):
                 await message.edit(message.text.capitalize())
 
     @loader.command(ru_doc=" - [lower / capitalize / upper] - Выбрать фильтр")
-    async def helloworld(self, message: Message):
+    async def filter_ch(self, message: Message):
         """ - [lower / capitalize / upper] - Chose filter"""
-        args = utils.get_raw_args(message)
+        args = utils.get_args_raw(message)
         if args.lower() not in [lower,capitalize,upper]:
             await utils.answer(message,self.strings("wrong"))
         else:
