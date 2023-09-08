@@ -12,11 +12,11 @@ class TextFilters(loader.Module):
         self.set("filter","Dont care")
     strings = {
         "name": "TextFilters", 
-        "wrong": "Wrong Argument. \n\nupper - Capitalize\ncapitalize - Starts with a capital letter and the rest are small.\nlower - Reduces all letters",
+        "wrong": "Wrong Argument. \n\nupper - Capitalize\ncapitalize - Starts with a capital letter and the rest are small.\nlower - Reduces all letters\noff - Disable filters",
         "correct": "Filter changed to {}"
     }
     strings_ru = {
-        "wrong": "Неверный аргумент. \n\nupper - Большие буквы\ncapitalize - Начинает с большой буквы, а остальные маленькие\nlower - Уменьшает все буквы",
+        "wrong": "Неверный аргумент. \n\nupper - Большие буквы\ncapitalize - Начинает с большой буквы, а остальные маленькие\nlower - Уменьшает все буквы\noff - Выключить фильтры",
         "correct": "Фильтр сменён на {}"
     }
 
@@ -44,12 +44,12 @@ class TextFilters(loader.Module):
                         await message.edit(message.text.capitalize())
                     except Exception:
                         pass
-                    
+
         except AttributeError:
             pass # Ну это херня с ивентами, поэтому да
-    @loader.command(ru_doc=" - [lower / capitalize / upper] - Выбрать фильтр")
+    @loader.command(ru_doc=" - [lower / capitalize / upper / off] - Выбрать фильтр")
     async def filter_ch(self, message: Message):
-        """ - [lower / capitalize / upper] - Chose filter"""
+        """ - [lower / capitalize / upper / off] - Chose filter"""
         args = utils.get_args_raw(message)
         if args.lower() not in ["lower","capitalize","upper"]:
             await utils.answer(message,self.strings("wrong"))
