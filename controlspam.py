@@ -22,15 +22,26 @@ class ControlSpam(loader.Module):
         ) 
     @loader.command()
     async def spam(self, message: Message):
-        """ [текст] [количество спама] - Начать спам"""
+        """ [количество спама] [текст / реплай]  - Начать спам"""
         self.config["status"] = True
-        args = utils.get_args_split_by(message," ")
+        args = utils.get_args(message)
         a = 0
+        reply = await message.get_reply_message()
+        text = "Something get wrong"
+        if reply:
+            text = reply.text
+        else:
+            text = " ".join(args[1:])
         while self.config["status"]:
-            a += 1
-            await self.client.send_message(message.chat_id,args[0])
-            if a > int(args[1]):
+            
+            if a == int(args[0]):
                 break
+            a += 1
+            
+            await self.client.send_message(message.chat_id,text)
+
+        await utils.answer(message,"Я начал спамить")
+            
     
     @loader.command()
     async def spam_stop(self, message: Message):
