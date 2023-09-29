@@ -1,7 +1,7 @@
 from hikkatl.types import Message
 from .. import loader, utils
 from telethon.tl.types import MessageService
-
+import asyncio
 # meta developer: @BruhHikkaModules
 
 @loader.tds
