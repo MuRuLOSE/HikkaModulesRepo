@@ -36,6 +36,7 @@ class ControlSpam(loader.Module):
                 text = reply.text
         else:
             text = " ".join(args[1:])
+        await utils.answer(message,"Я начал спамить")
         while self.config["status"]:
             
             if a == int(args[0]):
@@ -44,7 +45,7 @@ class ControlSpam(loader.Module):
             
             await self.client.send_message(message.chat_id,text)
 
-        await utils.answer(message,"Я начал спамить")
+        
 
     @loader.command()
     async def delayspam(self, message: Message):
@@ -61,6 +62,7 @@ class ControlSpam(loader.Module):
                 text = reply.text
         else:
             text = " ".join(args[2:])
+        await utils.answer(message,"Я начал спамить")
         while self.config["status"]:
             
             if a == int(args[0]):
@@ -70,7 +72,7 @@ class ControlSpam(loader.Module):
             await self.client.send_message(message.chat_id,text)
             await asyncio.sleep(int(args[1]))
 
-        await utils.answer(message,"Я начал спамить")
+        
             
     
     @loader.command()
