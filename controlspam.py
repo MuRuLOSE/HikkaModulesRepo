@@ -68,7 +68,7 @@ class ControlSpam(loader.Module):
             a += 1
             
             await self.client.send_message(message.chat_id,text)
-            await asyncio.sleep(args[1])
+            await asyncio.sleep(int(args[1]))
 
         await utils.answer(message,"Я начал спамить")
             
