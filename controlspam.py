@@ -29,9 +29,13 @@ class ControlSpam(loader.Module):
         a = 0
         reply = await message.get_reply_message()
         text = "Something get wrong"
+        type_topic = False
+        topic_id = None
         if reply:
             if isinstance(reply, MessageService):
                 text = " ".join(args[1:])
+                type_topic = True
+                topic_id = message.reply_to_msg_id
             else:
                 text = reply.text
         else:
@@ -43,7 +47,10 @@ class ControlSpam(loader.Module):
                 break
             a += 1
             
-            await self.client.send_message(message.chat_id,text)
+            if type_topic:
+                await self.client.send_message(message.chat_id,text,reply_to=topic_id)
+            else:
+                await self.client.send_message(message.chat_id,text)
 
         
 
@@ -55,9 +62,13 @@ class ControlSpam(loader.Module):
         a = 0
         reply = await message.get_reply_message()
         text = "Something get wrong"
+        type_topic = False
+        topic_id = None
         if reply:
             if isinstance(reply, MessageService):
                 text = " ".join(args[2:])
+                type_topic = True
+                topic_id = message.reply_to_msg_id
             else:
                 text = reply.text
         else:
@@ -68,8 +79,10 @@ class ControlSpam(loader.Module):
             if a == int(args[0]):
                 break
             a += 1
-            
-            await self.client.send_message(message.chat_id,text)
+            if type_topic:
+                await self.client.send_message(message.chat_id,text,reply_to=topic_id)
+            else:
+                await self.client.send_message(message.chat_id,text)
             await asyncio.sleep(int(args[1]))
 
         
