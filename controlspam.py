@@ -41,6 +41,29 @@ class ControlSpam(loader.Module):
             await self.client.send_message(message.chat_id,text)
 
         await utils.answer(message,"Я начал спамить")
+
+    @loader.command()
+    async def delayspam(self, message: Message):
+        """ [количество спама] [Задержка в секундах] [текст / реплай]  - Начать спам"""
+        self.config["status"] = True
+        args = utils.get_args(message)
+        a = 0
+        reply = await message.get_reply_message()
+        text = "Something get wrong"
+        if reply:
+            text = reply.text
+        else:
+            text = " ".join(args[2:])
+        while self.config["status"]:
+            
+            if a == int(args[0]):
+                break
+            a += 1
+            
+            await self.client.send_message(message.chat_id,text)
+            await asyncio.sleep(args[1])
+
+        await utils.answer(message,"Я начал спамить")
             
     
     @loader.command()
