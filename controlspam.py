@@ -1,5 +1,6 @@
 from hikkatl.types import Message
 from .. import loader, utils
+from telethon.tl.types import MessageService
 
 # meta developer: @BruhHikkaModules
 
@@ -29,7 +30,10 @@ class ControlSpam(loader.Module):
         reply = await message.get_reply_message()
         text = "Something get wrong"
         if reply:
-            text = reply.text
+            if isinstance(reply, MessageService):
+                text = " ".join(args[1:])
+            else:
+                text = reply.text
         else:
             text = " ".join(args[1:])
         while self.config["status"]:
@@ -51,7 +55,10 @@ class ControlSpam(loader.Module):
         reply = await message.get_reply_message()
         text = "Something get wrong"
         if reply:
-            text = reply.text
+            if isinstance(reply, MessageService):
+                text = " ".join(args[2:])
+            else:
+                text = reply.text
         else:
             text = " ".join(args[2:])
         while self.config["status"]:
