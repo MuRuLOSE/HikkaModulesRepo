@@ -10,3 +10,8 @@ compliments
 ReplaceWords
 PasswordUtils
 timer
+SearchersGenQuery
+PinMoreChats
+Morse
+TextFilters
+ControlSpam
