@@ -47,12 +47,12 @@ class PinMoreChats(loader.Module):
                 message.chat_id,
                 entity.first_name
             )
-        elif isinstance(peer, PeerChat) or isinstance(peer, PeerChannel):
+        elif isinstance(peer, (PeerChat, PeerChannel)):
             added = self.strings("added").format(
                 message.chat_id,
                 entity.title
             )
-        
+
         await utils.answer(message,added)
     
     @loader.command(
@@ -88,20 +88,13 @@ class PinMoreChats(loader.Module):
             except Exception:
                 pass # просто если нету -100 то и не надо
             try:
-                if isinstance(peer, PeerUser):
-                    name = entity.first_name
-                elif isinstance(peer, PeerChat):
-                    name = entity.title
-                elif isinstance(peer, PeerChannel):
-                    name = entity.title
-                else:
-                    name = entity.title
+                name = entity.first_name if isinstance(peer, PeerUser) else entity.title
             except Exception:
                 pass
             messages = await self.client.get_messages(chat_id, limit=1)
             max_message_id = messages[0].id
             chats += f"<a href=tg://privatepost?channel={chat}&post={max_message_id}>{name}</a>\n"
-        
+
         await utils.answer(message,self.strings("pinned") + chats) # Почему через плюс? Потому что f-string ругается SyntaxError: f-string: unmatched '('
 
 

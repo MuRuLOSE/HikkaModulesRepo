@@ -40,7 +40,7 @@ class Autoreader(loader.Module):
         if message.chat_id not in self._chats:
             self._chats.append(message.chat_id)
             added = True
-        elif message.chat_id in self._chats:
+        else:
             self._chats.remove(message.chat_id)
             removed = True
         if added:
@@ -88,14 +88,14 @@ class Autoreader(loader.Module):
                 value = int(str(args.strip()))
             except Exception:
                 await utils.answer(message,"Неверный айди!")
-                
+
             if str(args).startswith("-100"):
                 value = int(str(args)[4:])
-                
+
             elif args > 2**64 - 1 or args < 0:
                 await utils.answer(message,"Неверный айди!")
             else:
-                await self.client.send_read_acknowledge(int(args),clear_mentions=True)
+                await self.client.send_read_acknowledge(args, clear_mentions=True)
         else:
             await self.client.send_read_acknowledge(message.chat_id,clear_mentions=True)
             await message.delete()

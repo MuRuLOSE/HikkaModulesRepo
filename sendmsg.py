@@ -59,7 +59,7 @@ class SendMSGA(loader.Module):
 			await utils.answer(message,f"Пример команды:\n .sendmsg me 1234\n Вместо me юзернейм, вместо 1234 ваш текст")
 		message.message = " ".join(args.split()[1:])
 		try:
-			if error == False:
+			if not error:
 				await message.client.send_message(send_to,message.message)
 		except ValueError as e:
 			error = True
@@ -67,7 +67,7 @@ class SendMSGA(loader.Module):
 		except Exception as e:
 			error = True
 			await utils.answer(message,f" | Непредвиденная ошибка:\n<code>{e}</code>\n\nСообщите об этой ошибке разработчику модуля! @MuRuLOSE")
-		if error == False:
+		if not error:
 			await utils.answer(message,"Сообщение успешно отправлено")
 		
 		
