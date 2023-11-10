@@ -8,7 +8,7 @@ class ReplaceWords(loader.Module):
 
     async def client_ready(self,client,db):
         self.db = db
-        self._words = self.pointer("words",{})
+        self._words = self.get("words",{})
 
     strings = {
         "name": "ReplaceWords",
