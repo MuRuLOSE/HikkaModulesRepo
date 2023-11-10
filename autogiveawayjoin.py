@@ -20,7 +20,7 @@ class AutoGiveawayJoin(loader.Module):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "join",
-                60,
+                False,
                 "Присоеденяться к розыгрышам?",
                 validator=loader.validators.Boolean()
             )
@@ -29,7 +29,7 @@ class AutoGiveawayJoin(loader.Module):
     @loader.watcher(from_id=5522271758)
     async def join_giveaway(self, message: Message):
 
-        if message.text == "Success start!":
+        if message.text == "Success start!" and self.config["join"]:
             await asyncio.sleep(random.randint(2, 5))
             await self.client.send_message(self.bot, "Участвую")
 
