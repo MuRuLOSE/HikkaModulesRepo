@@ -10,10 +10,7 @@ import random
 @loader.tds
 class AutoGiveawayJoin(loader.Module):
     """Авто присоеденение к розыгрышам в @mine_evo_bot"""
-    strings = {"name": "MyModule", "hello": "Hello world!"}
-    strings_ru = {"hello": "Привет мир!"}
-    strings_es = {"hello": "¡Hola mundo!"}
-    strings_de = {"hello": "Hallo Welt!"}
+    strings = {"name": "AutoGiveawayJoin"}
 
     def __init__(self):
         self.bot = 5522271758
