@@ -55,38 +55,37 @@ class PerevodLimitsX(loader.Module):
         
     @loader.command()
     async def perevodx(self,message):
-     ''' - [Ник перевода] [Сколько переводить] - Перевод лимитов'''
-     args = utils.get_args_split_by(message, " ")
-     async with self.client.conversation("@mine_evo_bot") as conv:
-        await conv.send_message("б")
-        res = await conv.get_response()
-        pattern = "<b>Баланс:</b>  (.*?)\n"
-        match = re.search(pattern, res.text,re.DOTALL)
-        if match:
-        	balance = match.group(1)
-        balance = match.group(1)
-        await conv.send_message(f"Перевести {args[0]} {balance}")
-        res = await conv.get_response()
-        if "недостаточно денег" in res.text:
-        	await utils.answer(message,"⚠️ Откройте конверт! Я не смог выяснить лимит игрока из-за бага майнево!")
-        	return
-        pattern = "\n(.*?)$"
-        match = re.search(pattern, res.message, re.DOTALL)
-        if match:
-        	sum = match.group(1).replace("$","")
+        ''' - [Ник перевода] [Сколько переводить] - Перевод лимитов'''
+        args = utils.get_args_split_by(message, " ")
+        async with self.client.conversation("@mine_evo_bot") as conv:
+            await conv.send_message("б")
+            res = await conv.get_response()
+            pattern = "<b>Баланс:</b>  (.*?)\n"
+            match = re.search(pattern, res.text,re.DOTALL)
+            if match:
+            	balance = match.group(1)
+            balance = match.group(1)
+            await conv.send_message(f"Перевести {args[0]} {balance}")
+            res = await conv.get_response()
+            if "недостаточно денег" in res.text:
+            	await utils.answer(message,"⚠️ Откройте конверт! Я не смог выяснить лимит игрока из-за бага майнево!")
+            	return
+            pattern = "\n(.*?)$"
+            if match := re.search(pattern, res.message, re.DOTALL):
+                sum = match.group(1).replace("$","")
 
-        conv.cancel()
-        ost = 0
-        self.set("full",args[1])
-        await utils.answer(message,"💖 Я начал переводить!")
-        for i in range(int(args[1])+1):
-        	self._db.get(__name__,"ost",0)
-        	await self.client.send_message("@mine_evo_bot",f"Перевести {args[0]} {sum}")
-        	await asyncio.sleep(self.config["time_perevod"])
-        	ost += 1
-        	self.set("ost",ost)
-        await utils.answer(message,"💸 Я всё перевёл")
-        await self.client.send_message(self._backup_channel,f"🎉 <b>Я перевел все лимиты игроку:</b> <code>{args[0]}</code> <b>В количстве:</b> <code>{args[1]}</code>")
+            conv.cancel()
+            ost = 0
+            self.set("full",args[1])
+            await utils.answer(message,"💖 Я начал переводить!")
+            for _ in range(int(args[1])+1):
+                self._db.get(__name__,"ost",0)
+                await self.client.send_message("@mine_evo_bot",f"Перевести {args[0]} {sum}")
+                await asyncio.sleep(self.config["time_perevod"])
+                ost += 1
+                self.set("ost",ost)
+            await utils.answer(message,"💸 Я всё перевёл")
+            await self.client.send_message(self._backup_channel,f"🎉 <b>Я перевел все лимиты игроку:</b> <code>{args[0]}</code> <b>В количстве:</b> <code>{args[1]}</code>")
        	
        	
   

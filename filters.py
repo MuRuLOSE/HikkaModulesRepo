@@ -38,15 +38,12 @@ class TextFilters(loader.Module):
                         await message.edit(message.text.upper())
                     except Exception:
                         pass
-            
+
                 elif filter_txt == "capitalize":
                     try:
                         await message.edit(message.text.capitalize())
                     except Exception:
                         pass
-                elif filter_txt == "off":
-                    pass # Ну а чо делать
-
         except AttributeError:
             pass # Ну это херня с ивентами, поэтому да
     @loader.command(ru_doc=" - [lower / capitalize / upper / off] - Выбрать фильтр")

@@ -27,58 +27,56 @@ class SpyEVO(loader.Module):
 
     @loader.watcher()
     async def watcher(self,message):
-    	converts = self.get("converts",0)
-    	r_converts = self.get("r_converts",0)
-    	case = self.get("case",0)
-    	r_case = self.get("r_case",0)
-    	mif = self.get("mif",0)
-    	crystal = self.get("crystal",0)
-    	plasma = self.get("plasma",0)
-    	zv = self.get("zv",0)
-    	scrap = self.get("scrap",0)
-    	medals = self.get("medals",0)
-    	
-    	if message.chat_id == 5522271758 and message.text == "✉ Ты нашел(ла) конверт.":
-    		converts += 1
-    		self.set("converts",converts)
-    	if message.chat_id == 5522271758 and message.text == "🧧 Ты нашел(ла) редкий конверт.":
-    		r_converts +=1
-    		self.set("r_converts",converts)
-    	if message.chat_id == 5522271758 and message.text == "📦 Ты нашел(ла) Кейс!":
-    		case += 1
-    		self.set("case",case)
-    	if message.chat_id == 5522271758 and message.text == "🗳 Ты нашел(ла) Редкий Кейс!":
-    		r_case += 1
-    		self.set("r_case",r_case)
-    	if message.chat_id == 5522271758 and message.raw_text == "🕋 Ты нашел(ла) Мифический Кейс!":
-    		mif += 1
-    		self.set("mif",mif)
-    	if message.chat_id == 5522271758 and message.raw_text == "💎 Ты нашел(ла) Кристальный Кейс!":
-    		crystal += 1
-    		self.set("crystal",crystal)
-    	if message.chat_id == 5522271758 and "🎆 Ты нашел(ла) 1 плазму" in message.text:
-    		plasma += 1
-    		self.set("plasma",plasma)
-    	if message.chat_id == 5522271758 and "💫" in message.text:
-    		zv += 1
-    		self.set("zv",zv)
-    	if message.chat_id == 5522271758 and "🎆 Ты нашел(ла) 2 плазмы" in message.text:
-    		plasma += 2
-    		self.set("plasma",plasma)
-    	if message.chat_id == 5522271758 and "Медаль" in message.text:
-    		pattern = "Медаль +(.*?)</b>"
-    		match = re.search(pattern, message.text, re.DOTALL)
-    		if match:
-    			medali = int(match.group(1))
-    			medals += medali
-    			self.set("medals",medals)
-    	if message.chat_id == 5522271758 and "Скрап" in message.text:
-    		pattern = "Скрап +(.*?)</b>"
-    		match = re.search(pattern, message.text, re.DOTALL)
-    		if match:
-    			scrapi = int(match.group(1))
-    			scrap += scrapi
-    			self.set("scrap",scrap)
+        converts = self.get("converts",0)
+        r_converts = self.get("r_converts",0)
+        case = self.get("case",0)
+        r_case = self.get("r_case",0)
+        mif = self.get("mif",0)
+        crystal = self.get("crystal",0)
+        plasma = self.get("plasma",0)
+        zv = self.get("zv",0)
+        scrap = self.get("scrap",0)
+        medals = self.get("medals",0)
+
+        if message.chat_id == 5522271758 and message.text == "✉ Ты нашел(ла) конверт.":
+        	converts += 1
+        	self.set("converts",converts)
+        if message.chat_id == 5522271758 and message.text == "🧧 Ты нашел(ла) редкий конверт.":
+        	r_converts +=1
+        	self.set("r_converts",converts)
+        if message.chat_id == 5522271758 and message.text == "📦 Ты нашел(ла) Кейс!":
+        	case += 1
+        	self.set("case",case)
+        if message.chat_id == 5522271758 and message.text == "🗳 Ты нашел(ла) Редкий Кейс!":
+        	r_case += 1
+        	self.set("r_case",r_case)
+        if message.chat_id == 5522271758 and message.raw_text == "🕋 Ты нашел(ла) Мифический Кейс!":
+        	mif += 1
+        	self.set("mif",mif)
+        if message.chat_id == 5522271758 and message.raw_text == "💎 Ты нашел(ла) Кристальный Кейс!":
+        	crystal += 1
+        	self.set("crystal",crystal)
+        if message.chat_id == 5522271758 and "🎆 Ты нашел(ла) 1 плазму" in message.text:
+        	plasma += 1
+        	self.set("plasma",plasma)
+        if message.chat_id == 5522271758 and "💫" in message.text:
+        	zv += 1
+        	self.set("zv",zv)
+        if message.chat_id == 5522271758 and "🎆 Ты нашел(ла) 2 плазмы" in message.text:
+        	plasma += 2
+        	self.set("plasma",plasma)
+        if message.chat_id == 5522271758 and "Медаль" in message.text:
+            pattern = "Медаль +(.*?)</b>"
+            if match := re.search(pattern, message.text, re.DOTALL):
+                medali = int(match.group(1))
+                medals += medali
+                self.set("medals",medals)
+        if message.chat_id == 5522271758 and "Скрап" in message.text:
+            pattern = "Скрап +(.*?)</b>"
+            if match := re.search(pattern, message.text, re.DOTALL):
+                scrapi = int(match.group(1))
+                scrap += scrapi
+                self.set("scrap",scrap)
  
     @loader.command()
     async def show_spy(self,message):

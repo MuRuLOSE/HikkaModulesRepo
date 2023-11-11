@@ -40,7 +40,9 @@ class PasswordUtils(loader.Module):
         ''' - Gen password'''
         symbols = ["!","@","#","$","%","^","&","*","-","+"]
         letters = string.ascii_lowercase+string.ascii_uppercase
-        password = ''.join(random.choice(letters)+random.choice(symbols) for i in range(8))
+        password = ''.join(
+            random.choice(letters) + random.choice(symbols) for _ in range(8)
+        )
         await utils.answer(message,password) 
 
 
