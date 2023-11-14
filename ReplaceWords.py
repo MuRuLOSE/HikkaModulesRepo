@@ -1,5 +1,7 @@
 from hikkatl.types import Message
-from .. import loader, utils 
+from .. import loader, utils
+
+from ..pointers import PointerDict
 
 # meta developer: @BruhHikkaModules
 @loader.tds
@@ -8,7 +10,7 @@ class ReplaceWords(loader.Module):
 
     async def client_ready(self,client,db):
         self.db = db
-        self._words = self.get("words",{})
+        self._words = PointerDict(db, module=__name__, key="words", default={})
 
     strings = {
         "name": "ReplaceWords",
@@ -113,6 +115,3 @@ class ReplaceWords(loader.Module):
             await utils.answer(message,self.strings("word_remove"))
         else:
             await utils.answer(self.strings("word_edit_err"))
-
-
-        
