@@ -27,7 +27,7 @@ class ReplaceWords(loader.Module):
         "status": "Переключите на True если вам нужно включить модуль",
         "aleardy_exist": "Слово уже существует",
         "word_first": "Слово {} Будет заменяться на {}",
-        "word_edit": "{} слово изменено на {}",
+        "word_edit": "Слово {} изменено на {}",
         "word_edit_err": "Этого слова нету",
         "word_remove": "Слово удалено"
     }
