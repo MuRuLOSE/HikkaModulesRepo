@@ -1,7 +1,10 @@
 from hikkatl.types import Message
 from .. import loader, utils
+import logging
 
 from ..pointers import PointerDict
+
+logger = logging.getLogger()
 
 # meta developer: @BruhHikkaModules
 @loader.tds
@@ -10,7 +13,7 @@ class ReplaceWords(loader.Module):
 
     async def client_ready(self,client,db):
         self.db = db
-        self._words = PointerDict(db, module=__name__, key="words", default={})
+        self._words = PointerDict(self.db, module="ReplaceWordsNew", key="words",default={})
 
     strings = {
         "name": "ReplaceWords",
@@ -42,14 +45,38 @@ class ReplaceWords(loader.Module):
             )
         )
 
+    def check_word_in_dict(self,word):
+        words = self._words
+
+        if word in words.keys():
+            return True
+        else:
+            return False
+        
     @loader.watcher()
     async def watcher(self,message):
         words = self._words
         me = await self.client.get_me(id)
         user_id = me.user_id
-        if message.raw_text.lower() in words.keys() and self.config["status"] and message.from_id == user_id:
-            word = self._words.get(message.text.lower())
-            await utils.answer(message,word)
+
+        if (
+            ''.join(list((words.keys()))) in message.text
+            and self.config["status"] 
+            and message.from_id == user_id
+        ):
+
+            wordslist = message.raw_text.split()
+
+            keywordslist = list(filter(self.check_word_in_dict, wordslist))
+                
+            for raw_word in keywordslist:
+                word = self._words.get(raw_word)
+                new_text = message.raw_text.replace(raw_word,word)
+            
+            try:
+                await utils.answer(message,new_text)
+            except UnboundLocalError:
+                pass
 
     @loader.command(
         ru_doc=" - Включить / Выключить замену слов"
@@ -89,9 +116,9 @@ class ReplaceWords(loader.Module):
     async def edit_word(self,message):
         ''' - [Word] [What to edit it with] - Edit word'''
         args = utils.get_args_split_by(message," ")
-        words = self._words
+        words = self._words.keys()
 
-        if args[0].lower() in words:
+        if args[0] in words:
             self._words.update({args[0]:args[1]})
             word_edit = self.strings("word_edit")
             await utils.answer(
@@ -114,4 +141,4 @@ class ReplaceWords(loader.Module):
             self._words.pop(args.lower())
             await utils.answer(message,self.strings("word_remove"))
         else:
-            await utils.answer(self.strings("word_edit_err"))
+            await utils.answer(message,self.strings("word_edit_err"))
