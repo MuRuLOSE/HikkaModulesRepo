@@ -142,3 +142,18 @@ class ReplaceWords(loader.Module):
             await utils.answer(message,self.strings("word_remove"))
         else:
             await utils.answer(message,self.strings("word_edit_err"))
+
+    @loader.command(
+        ru_doc = " - Посмотреть все замены слов"
+    )
+    
+    async def list_words(self,message):
+        ''' - Watch all replaced words'''
+
+        words = self._words
+        words_str = ""
+        for key, value in words.items():
+            words_str += f"{key}: {value}\n"
+
+        await utils.answer(message,words_str)
+

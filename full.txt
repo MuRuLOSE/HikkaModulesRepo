@@ -1,9 +1,5 @@
 SpyEVO
 ChannelCheck
-factorial
-HeEVO
-AutoShaxta
-PerevodLimitsX
 autoreader
 youtubesearcher
 compliments
@@ -16,3 +12,4 @@ Morse
 TextFilters
 ControlSpam
 autogiveawayjoin
+YamiManager
