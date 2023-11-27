@@ -17,8 +17,8 @@ class CheckTime(loader.Module):
         "right_setcity": "<b>Is this correct?</b> City: {city}, If yes, press: <b>✅ Correct</b>",
         "button_right_setcity": "✅ Correct",
         "button_wrong_setcity": "❌ Wrong",
-        "city_set": "🌆 The default city is set!",
-        "time": "City: {}\nTime: {}",
+        "city_set": "🌆 <b>The default city is set!</b>",
+        "time": "<b>Timezone:</b> {}\n<b>Time:</b> {}",
         "error": "🚫 <b>Something wrong!</b>\nYou may have entered the wrong time zone, if you can't resolve this, contact @BruhHikkaModules in the chat room"
     }
 
@@ -27,7 +27,7 @@ class CheckTime(loader.Module):
         "button_right_setcity": "✅ Верно",
         "button_wrong_setcity": "❌ Неверно",
         "city_set": "🌆 <b>Город по-улмолчанию установлен!</b>",
-        "time": "<b>Город:</b> <i>{}</i>\n<b>Время:</b> <code>{}</code>",
+        "time": "<b>Часовой пояс:</b> <i>{}</i>\n<b>Время:</b> <code>{}</code>",
         "error": "🚫 <b>Что-то пошло не так!</b>\nВозможно вы указали неверный часовой пояс, если вы не можете это решить, обратитесь в чат @BruhHikkaModules",
         "_cls_doc": "Проверьте время в вашем городе"
     }
