@@ -14,7 +14,7 @@ class CheckTime(loader.Module):
 
     strings = {
         "name": "CheckTime",
-        "right_setcity": "<b>Is this correct?</b> City: {city}, If yes, press: <b>✅ Correct</b>",
+        "right_setcity": "<b>Is this correct?</b> Timezone: {city}, If yes, press: <b>✅ Correct</b>",
         "button_right_setcity": "✅ Correct",
         "button_wrong_setcity": "❌ Wrong",
         "city_set": "🌆 <b>The default city is set!</b>",
@@ -23,7 +23,7 @@ class CheckTime(loader.Module):
     }
 
     strings_ru = {
-        "right_setcity": "<b>Всё верно?</b> Город: {city}, Если да, то нажмите: <b>✅ Верно</b>",
+        "right_setcity": "<b>Всё верно?</b> Часовой пояс: {city}, Если да, то нажмите: <b>✅ Верно</b>",
         "button_right_setcity": "✅ Верно",
         "button_wrong_setcity": "❌ Неверно",
         "city_set": "🌆 <b>Город по-улмолчанию установлен!</b>",
