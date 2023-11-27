@@ -13,3 +13,4 @@ TextFilters
 ControlSpam
 autogiveawayjoin
 YamiManager
+CheckTime
