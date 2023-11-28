@@ -10,6 +10,7 @@ import random
 @loader.tds
 class AutoGiveawayJoin(loader.Module):
     """Авто присоеденение к розыгрышам в @mine_evo_bot"""
+
     strings = {"name": "MyModule", "hello": "Hello world!"}
     strings_ru = {"hello": "Привет мир!"}
     strings_es = {"hello": "¡Hola mundo!"}
@@ -22,20 +23,19 @@ class AutoGiveawayJoin(loader.Module):
                 "join",
                 False,
                 "Присоеденяться к розыгрышам?",
-                validator=loader.validators.Boolean()
+                validator=loader.validators.Boolean(),
             )
         )
 
     @loader.watcher(from_id=5522271758)
     async def join_giveaway(self, message: Message):
-
         if message.text == "Success start!" and self.config["join"]:
             await asyncio.sleep(random.randint(2, 5))
             await self.client.send_message(self.bot, "Участвую")
 
     @loader.command()
     async def giveawayjoin(self, message: Message):
-        """ - Вкл / Выкл присоеденение к розыгрышам"""
+        """- Вкл / Выкл присоеденение к розыгрышам"""
         self.config["join"] = not self.config["join"]
 
         status = (

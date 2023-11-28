@@ -3,9 +3,11 @@ from .. import loader, utils
 
 # meta developer: @BruhHikkaModules
 
+
 @loader.tds
 class MyModule(loader.Module):
     """My module"""
+
     strings = {"name": "MyModule", "hello": "Hello world!"}
     strings_ru = {"hello": "Привет мир!"}
     strings_es = {"hello": "¡Hola mundo!"}

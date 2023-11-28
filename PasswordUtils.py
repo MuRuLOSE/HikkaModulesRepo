@@ -6,13 +6,12 @@ import string, random
 @loader.tds
 class PasswordUtils(loader.Module):
     """Ваш помощник в безопасных паролях"""
+
     strings = {"name": "PasswordUtils"}
 
-    @loader.command(
-        ru_doc=" - [Пароль] - Проверить пароль на безопасность"
-    )
+    @loader.command(ru_doc=" - [Пароль] - Проверить пароль на безопасность")
     async def passwordchecker(self, message: Message):
-        """ - [Password] - Check the password for security"""
+        """- [Password] - Check the password for security"""
         args = utils.get_args_raw(message)
         symbols = "!@#$%^&*-+"
         balls = 0
@@ -30,18 +29,15 @@ class PasswordUtils(loader.Module):
             balls += 1
         if has_symbol:
             balls += 1
-    
+
         await utils.answer(message, f"Balls: {balls}/4")
-    
-    @loader.command(
-        ru_doc=" - Генерация пароля"
-    )
-    async def passwordgen(self,message):
-        ''' - Gen password'''
-        symbols = ["!","@","#","$","%","^","&","*","-","+"]
-        letters = string.ascii_lowercase+string.ascii_uppercase
-        password = ''.join(random.choice(letters)+random.choice(symbols) for i in range(8))
-        await utils.answer(message,password) 
 
-
-        
+    @loader.command(ru_doc=" - Генерация пароля")
+    async def passwordgen(self, message):
+        """- Gen password"""
+        symbols = ["!", "@", "#", "$", "%", "^", "&", "*", "-", "+"]
+        letters = string.ascii_lowercase + string.ascii_uppercase
+        password = "".join(
+            random.choice(letters) + random.choice(symbols) for i in range(8)
+        )
+        await utils.answer(message, password)

@@ -1,15 +1,12 @@
-from telethon.types import (
-    Message
-)
+from telethon.types import Message
 from .. import loader, utils
 import asyncio
 import random
-from telethon.errors.common import (
-    AlreadyInConversationError
-)
+from telethon.errors.common import AlreadyInConversationError
 
 
 # meta developer: @BruhHikkaModules
+
 
 @loader.tds
 class YamiManager(loader.Module):
@@ -25,7 +22,7 @@ class YamiManager(loader.Module):
         "aleardyconv": "⛔ You can't execute more than one command",
         "genimgdisabled": "At the moment generate images disabled:\n\n{}",
         "sub-req": "Subscription is required for yami work, otherwise the module will not be removed and will not work before subscription",
-        "copyright": "Result from <a href='tg://resolve?domain=YamiChat_bot'>Yami's bot 💘</a>"
+        "copyright": "Result from <a href='tg://resolve?domain=YamiChat_bot'>Yami's bot 💘</a>",
     }
 
     strings_ru = {
@@ -38,110 +35,108 @@ class YamiManager(loader.Module):
         "genimgdisabled": "В данный момент генерация изображений отключена:\n\n{}",
         "sub-req": "Подписка необходима для работы ями, иначе модуль не будет удалён и не будет работать до подписки",
         "copyright": "Результат из <a href='tg://resolve?domain=YamiChat_bot'>бота Ями 💘</a>",
-        "_cls_doc": "Модуль для @YamiChat_bot"
+        "_cls_doc": "Модуль для @YamiChat_bot",
     }
 
     def __init__(self):
         self.bot = "YamiChat_bot"
-    
-    async def check_ban(self,text,message):
+
+    async def check_ban(self, text, message):
         if "Не пиши" in text:
-            await utils.answer(message,"Как ты мог обидеть ями? Теперь я тоже обижена!")
-            return await self.invoke("unloadmod","YamiManager",message.peer_id)
-    
+            await utils.answer(
+                message, "Как ты мог обидеть ями? Теперь я тоже обижена!"
+            )
+            return await self.invoke("unloadmod", "YamiManager", message.peer_id)
+
     @loader.command(
-        ru_doc = " [команда] [запрос] - Отправить команду Ями бот\nПример: .scmmnd /img аргументы с запросом"
+        ru_doc=" [команда] [запрос] - Отправить команду Ями бот\nПример: .scmmnd /img аргументы с запросом"
     )
     async def scmmnd(self, message: Message):
-        ''' [cmd] [request] - Send command to Yami bot\nExample: .scmmnd /img arguments with req'''
+        """[cmd] [request] - Send command to Yami bot\nExample: .scmmnd /img arguments with req"""
         args = utils.get_args_raw(message).split()
-        req = ' '.join(args[1:])
-        
-        await utils.answer(message,f"☁ {self.strings['wait']}")
+        req = " ".join(args[1:])
+
+        await utils.answer(message, f"☁ {self.strings['wait']}")
         try:
             async with self.client.conversation(self.bot, timeout=180) as conv:
                 try:
                     await conv.send_message(f"{args[0]} {req}")
                     res = await conv.get_response()
-                    await self.check_ban(res.raw_text,message)
+                    await self.check_ban(res.raw_text, message)
 
                     if "Вы не подписаны на все каналы" in res.raw_text:
+                        await utils.answer(
+                            message, f"Check @{self.inline.bot_username}"
+                        )
 
-                        await utils.answer(message,f'Check @{self.inline.bot_username}')
-                        
                         return await self.request_join(
                             "YamiChannel",
                             f"{self.strings['sub-req']}",
-                            assure_joined=True
+                            assure_joined=True,
                         )
 
-                        
-
-                    if "✅ Запрос принят! Пожалуйста подожди 1-3 минуты, оно того стоит :3" in res.raw_text:
+                    if (
+                        "✅ Запрос принят! Пожалуйста подожди 1-3 минуты, оно того стоит :3"
+                        in res.raw_text
+                    ):
                         await asyncio.sleep(10)
                         res = await conv.get_response()
-                        
-                    elif "❌Генерация изображений отключена на данный момент! Мы уже работаем над восстановлением!" in res.raw_text:
-                        return await utils.answer(message,self.strings["genimgdisabled"].format(res.text))
-                    
+
+                    elif (
+                        "❌Генерация изображений отключена на данный момент! Мы уже работаем над восстановлением!"
+                        in res.raw_text
+                    ):
+                        return await utils.answer(
+                            message, self.strings["genimgdisabled"].format(res.text)
+                        )
+
                     await conv.mark_read()
-                    
 
                 except asyncio.TimeoutError:
-                    return await utils.answer(message,self.strings["timeout-error"])
+                    return await utils.answer(message, self.strings["timeout-error"])
         except AlreadyInConversationError:
-            return await utils.answer(message,self.strings["aleardyconv"])
+            return await utils.answer(message, self.strings["aleardyconv"])
 
         if res.media is not None:
-
             return await utils.answer(
                 message,
                 res.media,
-                caption=self.strings["answer"].format(
-                    res.text
-                )
+                caption=self.strings["answer"].format(res.text)
                 + (
                     ("\n\n") + self.strings["copyright"]
-                    if random.randint(0,10) <= 5
+                    if random.randint(0, 10) <= 5
                     else ""
                 ),
-                as_file=True
+                as_file=True,
             )
-        
+
         else:
             return await utils.answer(
                 message,
-                self.strings["answer"].format(
-                    res.text
-                )
+                self.strings["answer"].format(res.text)
                 + (
                     ("\n\n") + self.strings["copyright"]
-                    if random.randint(0,10) <= 5
+                    if random.randint(0, 10) <= 5
                     else ""
-                )
+                ),
             )
 
-
-        
-
-    @loader.command(
-        ru_doc = " - Проверьте, жив ли бот"
-    )
+    @loader.command(ru_doc=" - Проверьте, жив ли бот")
     async def chalive(self, message: Message):
-        ''' - Check, to see if the bot is alive '''
+        """- Check, to see if the bot is alive"""
         try:
             async with self.client.conversation(self.bot, timeout=10) as conv:
                 try:
                     await conv.send_message("/start")
                     res = await conv.get_response()
-                    await self.check_ban(res.raw_text,message)
+                    await self.check_ban(res.raw_text, message)
                 except asyncio.TimeoutError:
-                    return await utils.answer(message,self.strings["dead"])
-                
+                    return await utils.answer(message, self.strings["dead"])
+
                 finally:
                     conv.cancel()
 
         except AlreadyInConversationError:
-            return await utils.answer(message,self.strings["aleardyconv"])
-        
-        await utils.answer(message,self.strings["alive"])
+            return await utils.answer(message, self.strings["aleardyconv"])
+
+        await utils.answer(message, self.strings["alive"])
