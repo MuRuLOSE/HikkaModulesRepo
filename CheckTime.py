@@ -237,12 +237,8 @@ class CheckTime(loader.Module):
         ''' - Send widget'''
         self.config["id"] = [message.id,message.chat_id]
         
-        await utils.answer(message,)
-
-
-
-
-    
+        await utils.answer(message,self.strings["wait_widget"])
+        
     async def _setcity(self, call: InlineCall, city: str):
         self.config["city"] = city
 
