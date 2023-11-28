@@ -176,7 +176,7 @@ class CheckTime(loader.Module):
                     },
 
                     {
-                        "text": "🕓 Time",
+                        "text": "❌ Close",
                         "action": "close"
                     }
                 ]
