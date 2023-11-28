@@ -27,7 +27,9 @@ class CheckTime(loader.Module):
         "select_info": "<b>Select the information in the buttons:</b>",
         "general_info": "🌐 <b>General information:\n\nTime: <i>{}</i>\nDate: <i>{}</i>\nDay: <i>{}</i>\nTimezone: <i>{}</i>\nDay of the week: <i>{}</i></b>",
         "day_week" : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-        "no_tz":"❌ <b>There is no such time zone!</b>"
+        "no_tz":"❌ <b>There is no such time zone!</b>",
+        "widget": "<b>Information about my time:</b>\n\n{}",
+        "wait_widget": "🕓 Wait for widget (1min, maybe more)"
     }
 
     strings_ru = {
@@ -42,6 +44,8 @@ class CheckTime(loader.Module):
         "general_info": "🌐 <b>Общая информация:\n\nВремя: <i>{}</i>\nДата: <i>{}</i>\nДень: <i>{}</i>\nЧасовой пояс: <i>{}</i>\nДень недели: <i>{}</i></b>",
         "day_week" : ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"],
         "no_tz": "❌ <b>Нету такой часовой зоны!</b>",
+        "widget": "<b>Информация о моём времени:</b>\n\n{}",
+        "wait_widget": "🕓 Подождите пока появится виджет (1min, maybe more)",
         "_cls_doc": "Проверьте время в вашем городе"
     }
 
@@ -52,19 +56,20 @@ class CheckTime(loader.Module):
                 "Europe/Moscow",
                 lambda: "For default city",
                 validator=loader.validators.String()
+            ),
+
+            loader.ConfigValue(
+                "id",
+                0,
+                lambda: "For widget"
             )
         )
 
-    
-    
-    
-        
-    
     @loader.command(
-        ru_doc=" [Часовой пояс] - Поставь свой город по-улмолчанию\nПример: .set_city Europe/Moscow",
+        ru_doc=" [Часовой пояс / Ничего] - Поставь свой город по-улмолчанию\nПример: .set_city Europe/Moscow",
     )
     async def setcity(self, message: Message):
-        """ [Timezone] - Set your city to default\nExample: .set_city Europe/Moscow"""
+        """ [Timezone / Nothing] - Set your city to default\nExample: .set_city Europe/Moscow"""
 
         args = utils.get_args_raw(message)
 
@@ -127,10 +132,10 @@ class CheckTime(loader.Module):
 
 
     @loader.command(
-        ru_doc=" [Часовой пояс] - Узнать время"
+        ru_doc=" [Часовой пояс / Ничего] - Узнать время"
     )
     async def showtime(self, message: Message):
-        ''' [Timezone] - Find out the time\nExample: .show_time Europe/Moscow'''
+        ''' [Timezone / Nothing] - Find out the time\nExample: .show_time Europe/Moscow'''
 
         args = utils.get_args_raw(message)
         default = self.config["city"]
@@ -191,6 +196,52 @@ class CheckTime(loader.Module):
                 ]
             ]
         )
+
+    @loader.loop(autostart=True,interval=60)
+    async def updwidget(self):
+        if self.config["id"] != 0:
+            chat_id = self.config["id"][1]
+            message_id = self.config["id"][0]
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f'http://worldtimeapi.org/api/timezone/{self.config["city"]}') as response:
+                    
+                    if response.status != 200:
+                        return await self.client.edit_message(chat_id, message_id ,self.strings["error"])
+                    
+                    data = await response.json()
+                    
+                    datetimecity = data["datetime"]
+                    day_of_week = data["day_of_week"]
+                    day_of_year = data["day_of_year"]
+                    tz = data["timezone"]
+
+                    datem = datetime.datetime.fromisoformat(datetimecity)
+
+            await self.client.edit_message(
+                self.config["id"][1], 
+                self.config["id"][0], 
+                self.strings["widget"].format(
+                    self.strings["general_info"].format(
+                        datem.strftime("%H:%M"),
+                        datem.strftime("%d.%m.%Y"),
+                        day_of_year,
+                        tz,
+                        self.strings["day_week"][day_of_week]
+                        )
+                )
+            )
+    @loader.command(
+        ru_doc=" [Часовой пояс / Ничего] - Отправить виджет"
+    )
+    async def send_widget(self, message: Message):
+        ''' - Send widget'''
+        self.config["id"] = [message.id,message.chat_id]
+        
+        await utils.answer(message,)
+
+
+
+
     
     async def _setcity(self, call: InlineCall, city: str):
         self.config["city"] = city
