@@ -26,7 +26,8 @@ class CheckTime(loader.Module):
         "select_tz": "<b>Select the time zone:</b>",
         "select_info": "<b>Select the information in the buttons:</b>",
         "general_info": "🌐 <b>General information:\n\nTime: <i>{}</i>\nDate: <i>{}</i>\nDay: <i>{}</i>\nTimezone: <i>{}</i>\nDay of the week: <i>{}</i></b>",
-        "day_week" : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        "day_week" : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "no_tz":"❌ <b>There is no such time zone!</b>"
     }
 
     strings_ru = {
@@ -40,6 +41,7 @@ class CheckTime(loader.Module):
         "select_info": "<b>Выберите информацию рассположеную в кнопках:</b>",
         "general_info": "🌐 <b>Общая информация:\n\nВремя: <i>{}</i>\nДата: <i>{}</i>\nДень: <i>{}</i>\nЧасовой пояс: <i>{}</i>\nДень недели: <i>{}</i></b>",
         "day_week" : ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"],
+        "no_tz": "❌ <b>Нету такой часовой зоны!</b>",
         "_cls_doc": "Проверьте время в вашем городе"
     }
 
@@ -95,6 +97,12 @@ class CheckTime(loader.Module):
             )
             
         else:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"http://worldtimeapi.org/api/timezone/{args}") as response:
+
+                    if response.status == 404:
+                        return await utils.answer(message,self.strings["no_tz"])
+                    
             await self.inline.form(
                 text=self.strings["right_setcity"].format(
                     city=args
@@ -117,11 +125,12 @@ class CheckTime(loader.Module):
             )
 
 
+
     @loader.command(
         ru_doc=" [Часовой пояс] - Узнать время"
     )
     async def showtime(self, message: Message):
-        ''' [TimeZone] - Find out the time\nExample: .show_time Europe/Moscow'''
+        ''' [Timezone] - Find out the time\nExample: .show_time Europe/Moscow'''
 
         args = utils.get_args_raw(message)
         default = self.config["city"]
