@@ -238,7 +238,7 @@ class CheckTime(loader.Module):
         self.config["id"] = [message.id,message.chat_id]
         
         await utils.answer(message,self.strings["wait_widget"])
-        
+
     async def _setcity(self, call: InlineCall, city: str):
         self.config["city"] = city
 
@@ -266,7 +266,7 @@ class CheckTime(loader.Module):
                 datem.strftime("%d.%m.%Y"),
                 data[3],
                 data[4],
-                self.strings["day_week"][data[2]]
+                self.strings["day_week"][data[2-1]]
         )
         )
     
