@@ -226,7 +226,7 @@ class CheckTime(loader.Module):
                         datem.strftime("%d.%m.%Y"),
                         day_of_year,
                         tz,
-                        self.strings["day_week"][day_of_week]
+                        self.strings["day_week"][day_of_week-1]
                         )
                 )
             )
