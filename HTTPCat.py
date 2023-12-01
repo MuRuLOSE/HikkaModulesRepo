@@ -75,7 +75,7 @@ class HTTPCat(loader.Module):
         reply_markup=[
             [
                 {
-                    "text": f"🔁 {self.strings['update']}",
+                    "text": f"🔄 {self.strings['update']}",
                     "callback": self.update
                 },
 
@@ -104,7 +104,9 @@ class HTTPCat(loader.Module):
 
         else:
             await self.inline.form(
-                text=self.strings["cat"],
+                text=self.strings["cat"].format(
+                    str(args)
+                ),
                 photo=self.api + str(args) + '.jpg',
                 message=message,
                 reply_markup=reply_markup
