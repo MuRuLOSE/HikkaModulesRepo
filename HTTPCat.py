@@ -1,6 +1,7 @@
 from hikkatl.types import Message
 from .. import loader, utils
 import random
+from ..inline.types import InlineCall
 
 # meta developer: @BruhHikkaModules
 
@@ -11,10 +12,12 @@ class HTTPCat(loader.Module):
 
     strings = {
         "name": "HTTPCat",
-        "cat": "Here's your {} cat."
+        "cat": "Here's your {} cat.",
+        "update": "Update"
     }
     strings_ru = {
-        "cat": "Вот тебе твой {} кот."
+        "cat": "Вот тебе твой {} кот.",
+        "update": "Обновить"
     }
 
     def __init__(self):
@@ -64,6 +67,15 @@ class HTTPCat(loader.Module):
     )
     async def gethttpcat(self, message: Message):
         """ [HTTP Status / Nothing] - Get picture with cat and HTTP code"""
+
+        reply_markup=[
+            [
+                {
+                    "text": f"🔁 {self.strings['update']}",
+                    "callback": self.update
+                }
+            ]
+        ]
         
         args = utils.get_args_raw(message)
 
@@ -71,24 +83,42 @@ class HTTPCat(loader.Module):
             code = str(random.choice(
                 [value for sublist in self.httpstatuses.values() for value in sublist]
             ))
-            await utils.answer_file(
-                message,
-                self.api + code + '.jpg',
-                caption=self.strings["cat"].format(
-                    code
-                ),
-                force_document=False
+
+            await self.inline.form(
+                text=self.strings["cat"],
+                photo=self.api + code + '.jpg',
+                message=message,
+                reply_markup=reply_markup
             )
 
         else:
-            await utils.answer_file(
-                message,
-                self.api + str(args) + '.jpg',
-                caption=self.strings["cat"].format(
-                    str(args)
-                ),
-                force_document=False
+            await self.inline.form(
+                text=self.strings["cat"],
+                photo=self.api + str(args) + '.jpg',
+                message=message,
+                reply_markup=reply_markup
             )
 
         # why jpg at end? to make sure that telegram sends it correctly.
 
+
+    async def update(self,call: InlineCall):
+        reply_markup=[
+            [
+                {
+                    "text": f"🔁 {self.strings['update']}",
+                    "callback": self.update
+                }
+            ]
+        ]
+        
+        code = str(random.choice(
+                [value for sublist in self.httpstatuses.values() for value in sublist]
+            ))
+        await call.edit(
+            photo=self.api + code + '.jpg',
+            text=self.strings["cat"].format(
+                code
+            ),
+            reply_markup=reply_markup
+        )
