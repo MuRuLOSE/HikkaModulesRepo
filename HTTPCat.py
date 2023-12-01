@@ -73,6 +73,11 @@ class HTTPCat(loader.Module):
                 {
                     "text": f"🔁 {self.strings['update']}",
                     "callback": self.update
+                },
+
+                {
+                    "text": "❌ Close",
+                    "action": "close"
                 }
             ]
         ]
@@ -105,11 +110,17 @@ class HTTPCat(loader.Module):
 
 
     async def update(self,call: InlineCall):
+        
         reply_markup=[
             [
                 {
                     "text": f"🔁 {self.strings['update']}",
                     "callback": self.update
+                },
+
+                {
+                    "text": "❌ Close",
+                    "action": "close"
                 }
             ]
         ]
