@@ -85,7 +85,9 @@ class HTTPCat(loader.Module):
             ))
 
             await self.inline.form(
-                text=self.strings["cat"],
+                text=self.strings["cat"].format(
+                    code
+                ),
                 photo=self.api + code + '.jpg',
                 message=message,
                 reply_markup=reply_markup
