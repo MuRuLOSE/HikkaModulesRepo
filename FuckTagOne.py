@@ -1,11 +1,12 @@
 from hikkatl.types import Message
 from .. import loader, utils
+import asyncio
 
 # meta developer: @BruhHikkaModules
 
 __version__ = (1, 0, 4)
 
-changelog = "I fix getting reply"
+changelog = "Now remove message about mention after 5 sec"
 
 @loader.tds
 class FuckTagOne(loader.Module):
@@ -83,9 +84,11 @@ class FuckTagOne(loader.Module):
                 ratelimit = True
 
             if ratelimit is not True:
-                await self.client.send_message(
+                msg = await self.client.send_message(
                     message.chat_id, self.strings["not_mention_me"], reply_to=message.id
                 )
+                await asyncio.sleep(5)
+                await msg.delete()
 
     @loader.command(
         ru_doc=" [id] - Добавить в игнор лист",
