@@ -1,18 +1,15 @@
 from hikkatl.types import Message
 from .. import loader, utils
-import asyncio
 
 # meta developer: @BruhHikkaModules
 
-__version__ = (1, 0, 4)
-
-changelog = "fix logic error"
+changelog = "Remove reply update. Because its bugged, maybe in feature i restore it"
 
 @loader.tds
 class FuckTagOne(loader.Module):
     f"""
-    Don't like being mentioned by a certain person?
-    Now you can just add his mentions to your ignore
+    Don't like to be mentioned by a certain person?
+    Now you can just add his mentions to your ignore!
     Changelog: {changelog}
     """
 
@@ -39,8 +36,8 @@ class FuckTagOne(loader.Module):
 
     strings_ru = {
         "_cls_doc": "Не любишь когда тебя упоминает какой-то определенный человек?\n"
-        "Теперь ты можешь просто добавить его упоминания в игнор!\n"
-        f"Список изменений (eng): {changelog}",
+        "Теперь ты можешь просто добавить его упоминания в игнор!\n",
+        f"Список изменений: {changelog}"
         "aleardy_in_list": "%s <b>Айди: {id} уже добавлен в список!</b>"
         % emoji["error"],
         "added_list": "%s Айди: {id} Добавлен в игнор." % emoji["successfully"],
@@ -84,11 +81,9 @@ class FuckTagOne(loader.Module):
                 ratelimit = True
 
             if ratelimit is not True:
-                msg = await self.client.send_message(
+                await self.client.send_message(
                     message.chat_id, self.strings["not_mention_me"], reply_to=message.id
                 )
-                await asyncio.sleep(5)
-                await msg.delete()
 
     @loader.command(
         ru_doc=" [id] - Добавить в игнор лист",
@@ -96,26 +91,11 @@ class FuckTagOne(loader.Module):
     async def addignore(self, message: Message):
         """[id] - Add to ignore list"""
 
-        args = None
+        args = int(utils.get_args_raw(message))
 
-        try:
-            args = int(utils.get_args_raw(message))
-        except ValueError:
-            args = False
-        
-        reply = await message.get_reply_message()
-
-        idpeople = 123456789 
-        if reply and args is False and reply.from_id not in self._ignore:
-            idpeople = reply.from_id
-            self._ignore.append(idpeople)
-            await utils.answer(message, self.strings["added_list"].format(id=idpeople))
-            
-        elif args not in self._ignore:
-            idpeople = args
-            self._ignore.append(idpeople)
-            await utils.answer(message, self.strings["added_list"].format(id=idpeople))
-            
+        if args not in self._ignore:
+            self._ignore.append(args)
+            await utils.answer(message, self.strings["added_list"].format(id=args))
 
         else:
             await utils.answer(message, self.strings["aleardy_in_list"].format(id=args))
@@ -124,35 +104,20 @@ class FuckTagOne(loader.Module):
     async def ignorelist(self, message: Message):
         """- Check who in ignore"""
         await utils.answer(
-            message,
-            self.strings["list_ids"].format(ids="\n".join(map(str, self._ignore))),
+            message, self.strings["list_ids"].format(ids="\n".join(map(str, self._ignore)))
         )
 
     @loader.command(ru_doc=" [id] - Удалить из списка игнора")
     async def removeignore(self, message: Message):
         """[id] - Remove from ignore list"""
 
-        args = None
+        args = utils.get_args_raw(message)
 
-        try:
-            args = int(utils.get_args_raw(message))
-        except ValueError:
-            args = False
-        reply = await message.get_reply_message()
-        idpeople = 1
-
-        if reply.from_id not in self._ignore:
-            await utils.answer(message, self.strings["not_in_list"])
-
-        elif args not in self._ignore:
+        if args not in self._ignore:
             await utils.answer(message, self.strings["not_in_list"])
 
         else:
-            if not reply:
-                idpeople = args
-            else:
-                idpeople = reply.from_id
-
+            self._ignore.remove(args)
             await utils.answer(
-                message, self.strings["removed_from_ignore"].format(id=idpeople)
+                message, self.strings["removed_from_ignore"].format(id=args)
             )
