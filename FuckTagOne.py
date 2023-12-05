@@ -5,6 +5,7 @@ from .. import loader, utils
 
 changelog = "Remove reply update. Because its bugged, maybe in feature i restore it"
 
+__version__ = (1, 0, 5)
 @loader.tds
 class FuckTagOne(loader.Module):
     f"""
