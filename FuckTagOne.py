@@ -113,7 +113,7 @@ class FuckTagOne(loader.Module):
     async def removeignore(self, message: Message):
         """[id] - Remove from ignore list"""
 
-        args = utils.get_args_raw(message)
+        args = int(utils.get_args_raw(message))
 
         if args not in self._ignore:
             await utils.answer(message, self.strings["not_in_list"])
