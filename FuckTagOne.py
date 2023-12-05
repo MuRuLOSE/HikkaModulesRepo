@@ -3,9 +3,9 @@ from .. import loader, utils
 
 # meta developer: @BruhHikkaModules
 
-changelog = "Remove reply update. Because its bugged, maybe in feature i restore it"
+changelog = "hotfix, new version"
 
-__version__ = (1, 0, 5)
+__version__ = (1, 0, 6)
 
 @loader.tds
 class FuckTagOne(loader.Module):
