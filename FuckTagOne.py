@@ -3,7 +3,7 @@ from .. import loader, utils
 
 # meta developer: @BruhHikkaModules
 
-
+__version__ = (1, 0, 3)
 @loader.tds
 class FuckTagOne(loader.Module):
     """Don't like being mentioned by a bot? (like @ZazyvalaTag2Bot)\n
