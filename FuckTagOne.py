@@ -92,7 +92,7 @@ class FuckTagOne(loader.Module):
             else:
                 ratelimit = True
 
-            if ratelimit is not True:
+            if ratelimit is not True and self.config["SendMessageOnMention"]:
                 await self.client.send_message(
                     message.chat_id, self.strings["not_mention_me"], reply_to=message.id
                 )
