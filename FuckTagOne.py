@@ -6,7 +6,7 @@ import asyncio
 
 __version__ = (1, 0, 4)
 
-changelog = "Now remove message about mention after 5 sec"
+changelog = "removeignore reply"
 
 @loader.tds
 class FuckTagOne(loader.Module):
@@ -132,13 +132,27 @@ class FuckTagOne(loader.Module):
     async def removeignore(self, message: Message):
         """[id] - Remove from ignore list"""
 
-        args = int(utils.get_args_raw(message))
+        args = None
 
-        if args not in self._ignore:
+        try:
+            args = int(utils.get_args_raw(message))
+        except ValueError:
+            args = False
+        reply = await message.get_reply_message()
+        idpeople = 1
+
+        if reply and args is not False and reply.from_id not in self._ignore:
+            await utils.answer(message, self.strings["not_in_list"])
+
+        elif args not in self._ignore:
             await utils.answer(message, self.strings["not_in_list"])
 
         else:
-            self._ignore.remove(args)
+            if not reply:
+                idpeople = args
+            else:
+                idpeople = reply.from_id
+
             await utils.answer(
-                message, self.strings["removed_from_ignore"].format(id=args)
+                message, self.strings["removed_from_ignore"].format(id=idpeople)
             )
