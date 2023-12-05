@@ -6,6 +6,7 @@ from .. import loader, utils
 changelog = "Remove reply update. Because its bugged, maybe in feature i restore it"
 
 __version__ = (1, 0, 5)
+
 @loader.tds
 class FuckTagOne(loader.Module):
     f"""
@@ -37,8 +38,8 @@ class FuckTagOne(loader.Module):
 
     strings_ru = {
         "_cls_doc": "Не любишь когда тебя упоминает какой-то определенный человек?\n"
-        "Теперь ты можешь просто добавить его упоминания в игнор!\n",
-        f"Список изменений: {changelog}"
+        "Теперь ты можешь просто добавить его упоминания в игнор!\n"
+        f"Список изменений: {changelog}",
         "aleardy_in_list": "%s <b>Айди: {id} уже добавлен в список!</b>"
         % emoji["error"],
         "added_list": "%s Айди: {id} Добавлен в игнор." % emoji["successfully"],
