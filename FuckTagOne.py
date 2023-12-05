@@ -5,7 +5,7 @@ from .. import loader, utils
 
 __version__ = (1, 0, 4)
 
-changelog = "Small hotfix, description is fixed"
+changelog = "I fix getting reply"
 
 @loader.tds
 class FuckTagOne(loader.Module):
@@ -100,7 +100,7 @@ class FuckTagOne(loader.Module):
         except ValueError:
             args = False
         
-        reply = message.get_reply_message()
+        reply = await message.get_reply_message()
 
         idpeople = 123456789 
         if reply and args is False and reply.from_id not in self._ignore:
