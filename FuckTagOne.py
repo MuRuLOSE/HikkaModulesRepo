@@ -87,7 +87,10 @@ class FuckTagOne(loader.Module):
     async def addignore(self, message: Message):
         """[id] - Add to ignore list"""
 
-        args = int(utils.get_args_raw(message))
+        try:
+            args = int(utils.get_args_raw(message))
+        except ValueError:
+            pass # yes
         
         reply = message.get_reply_message()
 
