@@ -3,9 +3,9 @@ from .. import loader, utils
 
 # meta developer: @BruhHikkaModules
 
-changelog = "hotfix, new version"
+changelog = "Add config, new version"
 
-__version__ = (1, 0, 6)
+__version__ = (1, 1, 0)
 
 @loader.tds
 class FuckTagOne(loader.Module):
@@ -59,6 +59,16 @@ class FuckTagOne(loader.Module):
         self._ignore_ids = self.pointer(
             "ignore_people", []
         )  # it's so that if your mentions (from one account) get spammed, you don't get floodwaiting.
+
+    def __init__(self):
+        self.config = loader.ModuleConfig(
+            loader.ConfigValue(
+                "SendMessageOnMention",
+                True,
+                lambda: "If you mentioned, and status is True, will be sended message ",
+                validator=loader.validators.Boolean(),
+            ),
+        )
 
     @loader.loop(autostart=True, interval=600)
     async def clear_ratelimits(self):
