@@ -5,7 +5,7 @@ from .. import loader, utils
 
 __version__ = (1, 0, 4)
 
-changelog = "Small hotfix, description is fixed, and addignore too"
+changelog = "Small hotfix, description is fixed"
 
 @loader.tds
 class FuckTagOne(loader.Module):
@@ -38,7 +38,8 @@ class FuckTagOne(loader.Module):
 
     strings_ru = {
         "_cls_doc": "Не любишь когда тебя упоминает какой-то определенный человек?\n"
-        "Теперь ты можешь просто добавить его упоминания в игнор!",
+        "Теперь ты можешь просто добавить его упоминания в игнор!\n"
+        f"Changelog {changelog}",
         "aleardy_in_list": "%s <b>Айди: {id} уже добавлен в список!</b>"
         % emoji["error"],
         "added_list": "%s Айди: {id} Добавлен в игнор." % emoji["successfully"],
