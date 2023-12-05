@@ -3,12 +3,16 @@ from .. import loader, utils
 
 # meta developer: @BruhHikkaModules
 
-__version__ = (1, 0, 3)
+__version__ = (1, 0, 4)
+
+changelog = "Small hotfix, description is fixed, and addignore too"
 
 @loader.tds
 class FuckTagOne(loader.Module):
-    """Don't like being mentioned by a bot? (like @ZazyvalaTag2Bot)\n
-    Then you need this module! It will ignore all caller bots. You can also add bots to the list yourself (You can add people too)
+    f"""
+    Don't like being mentioned by a certain person?
+    Now you can just add his mentions to your ignore
+    Changelog: {changelog}
     """
 
     emoji = {
@@ -88,17 +92,17 @@ class FuckTagOne(loader.Module):
     async def addignore(self, message: Message):
         """[id] - Add to ignore list"""
 
-        args = 1
-        
+        args = None
+
         try:
             args = int(utils.get_args_raw(message))
         except ValueError:
-            pass # yes
+            args = False
         
         reply = message.get_reply_message()
 
         idpeople = 123456789 
-        if reply and not args and reply.from_id not in self._ignore:
+        if reply and args is False and reply.from_id not in self._ignore:
             idpeople = reply.from_id
             self._ignore.append(idpeople)
             await utils.answer(message, self.strings["added_list"].format(id=idpeople))
