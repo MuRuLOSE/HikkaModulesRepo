@@ -6,7 +6,7 @@ import asyncio
 
 __version__ = (1, 0, 4)
 
-changelog = "removeignore reply"
+changelog = "fix logic error"
 
 @loader.tds
 class FuckTagOne(loader.Module):
@@ -141,7 +141,7 @@ class FuckTagOne(loader.Module):
         reply = await message.get_reply_message()
         idpeople = 1
 
-        if reply and args is not False and reply.from_id not in self._ignore:
+        if reply and args is False and reply.from_id not in self._ignore:
             await utils.answer(message, self.strings["not_in_list"])
 
         elif args not in self._ignore:
