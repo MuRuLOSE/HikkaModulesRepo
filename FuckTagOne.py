@@ -100,7 +100,8 @@ class FuckTagOne(loader.Module):
     async def ignorelist(self, message: Message):
         """- Check who in ignore"""
         await utils.answer(
-            message, self.strings["list_ids"].format("\n".join(self._ignore))
+            message,
+            self.strings["list_ids"].format(ids="\n".join(map(str, self._ignore))),
         )
 
     @loader.command(ru_doc=" [id] - Удалить из списка игнора")
