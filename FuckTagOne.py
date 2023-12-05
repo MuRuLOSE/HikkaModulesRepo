@@ -88,10 +88,20 @@ class FuckTagOne(loader.Module):
         """[id] - Add to ignore list"""
 
         args = int(utils.get_args_raw(message))
+        
+        reply = message.get_reply_message()
 
-        if args not in self._ignore:
-            self._ignore.append(args)
-            await utils.answer(message, self.strings["added_list"].format(id=args))
+        idpeople = 123456789 
+        if reply and not args and reply.from_id not in self._ignore:
+            idpeople = reply.from_id
+            self._ignore.append(idpeople)
+            await utils.answer(message, self.strings["added_list"].format(id=idpeople))
+            
+        elif args not in self._ignore:
+            idpeople = args
+            self._ignore.append(idpeople)
+            await utils.answer(message, self.strings["added_list"].format(id=idpeople))
+            
 
         else:
             await utils.answer(message, self.strings["aleardy_in_list"].format(id=args))
