@@ -58,7 +58,7 @@ class CustomPing(loader.Module):
                 ping=round((time.perf_counter_ns() - start) / 10**6, 3),
                 uptime=utils.formatted_uptime(),
                 ping_hint=(
-                    ("\n\n" + self.config["hint"])
+                    (self.config["hint"])
                     if random.choice([0, 0, 1]) == 1
                     else ""
                 )
