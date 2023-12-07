@@ -56,11 +56,11 @@ class CustomPing(loader.Module):
             message,
             self.config["text"].format(
                 ping=round((time.perf_counter_ns() - start) / 10**6, 3),
-                uptime=utils.formatted_uptime()
+                uptime=utils.formatted_uptime(),
+                ping_hint=(
+                    ("\n\n" + self.config["hint"])
+                    if random.choice([0, 0, 1]) == 1
+                    else ""
+                )
             )
-            + (
-                ("\n\n" + self.config["hint"])
-                if random.choice([0, 0, 1]) == 1
-                else ""
-            ),
         )
