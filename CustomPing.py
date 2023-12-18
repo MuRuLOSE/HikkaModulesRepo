@@ -2,6 +2,21 @@ from hikkatl.types import Message
 from .. import loader, utils
 import time
 import random
+
+"""
+    ███    ███ ██    ██ ██████  ██    ██ ██       ██████  ███████ ███████
+    ████  ████ ██    ██ ██   ██ ██    ██ ██      ██    ██ ██      ██  
+    ██ ████ ██ ██    ██ ██████  ██    ██ ██      ██    ██ ███████ █████
+    ██  ██  ██ ██    ██ ██   ██ ██    ██ ██      ██    ██      ██ ██  
+    ██      ██  ██████  ██   ██  ██████  ███████  ██████  ███████ ███████ 
+
+
+    CustomPing
+    📜 Licensed under the GNU AGPLv3	
+"""
+
+# meta banner: https://0x0.st/HYVX.jpg
+# meta desc: desc
 # meta developer: @BruhHikkaModules
 
 
@@ -16,7 +31,7 @@ class CustomPing(loader.Module):
         "{ping} - That's your ping.\n"
         "{uptime} - It's your uptime.\n"
         "{ping_hint} - This is the same hint as in the hikka module, it is chosen with random chance, also you can specify this hint in the config ",
-        "hint": "Set a hint"
+        "hint": "Set a hint",
     }
 
     strings_ru = {
@@ -26,7 +41,7 @@ class CustomPing(loader.Module):
         "{ping} - Это ваш пинг\n"
         "{uptime} - Это ваш аптайм\n"
         "{ping_hint} - Это такая же подсказка как и в модуле хикки, оно также будет выбираться случайно, вы также можете это указать в конфиге\n",
-        "hint": "Укажите подсказку"
+        "hint": "Укажите подсказку",
     }
 
     def __init__(self):
@@ -41,14 +56,15 @@ class CustomPing(loader.Module):
                 "hint",
                 "This is example hint!",
                 lambda: self.strings["hint"],
-                validator=loader.validators.String()
-            )
+                validator=loader.validators.String(),
+            ),
         )
+
     @loader.command(
         ru_doc=" - Узнать пинг вашего юзербота",
     )
     async def cping(self, message: Message):
-        """ - Find out your userbot ping"""
+        """- Find out your userbot ping"""
         start = time.perf_counter_ns()
         message = await utils.answer(message, "🌘")
 
@@ -58,9 +74,7 @@ class CustomPing(loader.Module):
                 ping=round((time.perf_counter_ns() - start) / 10**6, 3),
                 uptime=utils.formatted_uptime(),
                 ping_hint=(
-                    (self.config["hint"])
-                    if random.choice([0, 0, 1]) == 1
-                    else ""
-                )
-            )
+                    (self.config["hint"]) if random.choice([0, 0, 1]) == 1 else ""
+                ),
+            ),
         )

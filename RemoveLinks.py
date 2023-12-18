@@ -2,6 +2,20 @@ from hikkatl.types import Message
 from .. import loader, utils
 import re
 
+"""
+    ███    ███ ██    ██ ██████  ██    ██ ██       ██████  ███████ ███████
+    ████  ████ ██    ██ ██   ██ ██    ██ ██      ██    ██ ██      ██  
+    ██ ████ ██ ██    ██ ██████  ██    ██ ██      ██    ██ ███████ █████
+    ██  ██  ██ ██    ██ ██   ██ ██    ██ ██      ██    ██      ██ ██  
+    ██      ██  ██████  ██   ██  ██████  ███████  ██████  ███████ ███████ 
+
+
+    RemoveLinks
+    📜 Licensed under the GNU AGPLv3	
+"""
+
+# meta banner: https://0x0.st/HYVc.jpg
+# meta desc: desc
 # meta developer: @BruhHikkaModules
 
 
@@ -94,4 +108,4 @@ class RemoveLinks(loader.Module):
                 if edit_msg != message.raw_text:
                     await utils.answer(message, edit_msg)
         except AttributeError:
-            pass # Just excepted events or not text messages
+            pass  # Just excepted events or not text messages

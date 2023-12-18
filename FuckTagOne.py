@@ -1,11 +1,26 @@
 from hikkatl.types import Message
 from .. import loader, utils
 
+"""
+    ███    ███ ██    ██ ██████  ██    ██ ██       ██████  ███████ ███████
+    ████  ████ ██    ██ ██   ██ ██    ██ ██      ██    ██ ██      ██  
+    ██ ████ ██ ██    ██ ██████  ██    ██ ██      ██    ██ ███████ █████
+    ██  ██  ██ ██    ██ ██   ██ ██    ██ ██      ██    ██      ██ ██  
+    ██      ██  ██████  ██   ██  ██████  ███████  ██████  ███████ ███████ 
+
+
+    Module name
+    📜 Licensed under the GNU AGPLv3	
+"""
+
+# meta banner: https://0x0.st/HYVP.jpg
+# meta desc: desc
 # meta developer: @BruhHikkaModules
 
 changelog = "Add config, new version"
 
 __version__ = (1, 1, 0)
+
 
 @loader.tds
 class FuckTagOne(loader.Module):
@@ -116,7 +131,8 @@ class FuckTagOne(loader.Module):
     async def ignorelist(self, message: Message):
         """- Check who in ignore"""
         await utils.answer(
-            message, self.strings["list_ids"].format(ids="\n".join(map(str, self._ignore)))
+            message,
+            self.strings["list_ids"].format(ids="\n".join(map(str, self._ignore))),
         )
 
     @loader.command(ru_doc=" [id] - Удалить из списка игнора")

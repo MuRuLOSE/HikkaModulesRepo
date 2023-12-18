@@ -10,7 +10,13 @@ SearchersGenQuery
 PinMoreChats
 Morse
 TextFilters
+filters
 ControlSpam
+autoreader
 autogiveawayjoin
 YamiManager
 CheckTime
+RandomDog
+HTTPCat
+FuckTagOne
+CustomPing
