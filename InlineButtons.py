@@ -26,7 +26,7 @@ class InlineButtons(loader.Module):
     strings_ru = {"_cls_doc": "Создайте инлайн кнопки легко"}
 
     @loader.command(
-        ru_doc=" [Ссылка на изображение (опционально)] [Текст кнопки] [Ссылка в кнопке] [Текст] - Создать инлайн кнопку",
+        ru_doc=" [Текст кнопки] [Ссылка в кнопке] [Текст] - Создать инлайн кнопку",
     )
     async def cinline(self, message: Message):
         """ [Button text] [Button link] [Text] - Create inline button"""
