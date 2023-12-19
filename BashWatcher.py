@@ -48,8 +48,9 @@ class BashWatcher(loader.Module):
         prefix = self.config["prefix"]
         me = await self.client.get_me(id)
         user_id = me.user_id
-
+ 
         if message.text.startswith(prefix) and message.from_id == user_id:
+            await utils.answer(message, "<emoji document_id=5451646226975955576>⌛️</emoji>")
             commands = message.text.replace(prefix, "")
             stdout, stderr = await self.run_command(commands)
 
