@@ -20,3 +20,4 @@ RandomDog
 HTTPCat
 FuckTagOne
 CustomPing
+BashWatcher
