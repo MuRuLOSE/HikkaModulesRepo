@@ -11,10 +11,8 @@ FuckJoins
 FuckTagOne
 HTTPCat
 InlineButtons
-KomaruPhotos
 morse
 PasswordUtils
-PendingCommands
 PinMoreChats
 RandomDog
 RemoveLinks
