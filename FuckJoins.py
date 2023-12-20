@@ -5,6 +5,7 @@ import requests
 import re
 import string
 import random
+import logging
 
 """
     ███    ███ ██    ██ ██████  ██    ██ ██       ██████  ███████ ███████
@@ -20,8 +21,10 @@ import random
 
 # meta banner: link
 # meta desc: Tired of entering channels without your knowledge via JoinChannelRequest?\nThen use this module! You can remove all such requests with one command from the module (file or raw).
-    
+
 # meta developer: @BruhHikkaModules
+
+logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -48,7 +51,7 @@ class FuckJoins(loader.Module):
     )
     async def removejoins(self, message: Message):
         """[Reply to file / link to raw code] - Remove JoinChannelRequest"""
-        pattern = r".*JoinChannelRequest.*"
+        pattern = r'(await\s+client|self\.client|self\._client)\(JoinChannelRequest\([^)]*\)\)'
 
         args = utils.get_args_raw(message)
 
@@ -65,15 +68,18 @@ class FuckJoins(loader.Module):
                     filename = "".join(random.choice(characters) for _ in range(32))
                     path = tmpdir + "/" + filename
                     await reply.download_media(path)
-                    with open(path + ".py", "r+") as f:
+                    with open(path + ".py", "r") as f:
                         code = f.read()
-                        new_code = re.sub(pattern, "", code)
+                    new_code = re.sub(pattern, "", code)
+                    with open(path + ".py", "w") as f:
                         f.write(new_code)
-                        await self.client.send_file(
-                            message.chat_id,
-                            file=path + ".py",
-                            caption=f"Вот ваш измененный модуль {(reply).media.document.attributes[0].file_name}!",
-                        )
+                    logger.info(new_code)
+                    await self.client.send_file(
+                        message.chat_id,
+                        file=path + ".py",
+                        caption=f"Вот ваш измененный модуль {(reply).media.document.attributes[0].file_name}!",
+                    )
+
         else:
             code = (await utils.run_sync(requests.get, args)).content.decode()
 
