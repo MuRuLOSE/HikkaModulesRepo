@@ -73,7 +73,6 @@ class FuckJoins(loader.Module):
                     new_code = re.sub(pattern, "", code)
                     with open(path + ".py", "w") as f:
                         f.write(new_code)
-                    logger.info(new_code)
                     await self.client.send_file(
                         message.chat_id,
                         file=path + ".py",
