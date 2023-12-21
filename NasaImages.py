@@ -15,7 +15,7 @@ import random
     📜 Licensed under the GNU AGPLv3	
 """
 
-# meta banner: link
+# meta banner: https://0x0.st/HgMS.jpg
 # meta desc: Images from Nasa website
 # meta developer: @BruhHikkaModules
 # requires: aiohttp
