@@ -42,7 +42,7 @@ class NasaImages(loader.Module):
                 "api-key",
                 "DEMO_KEY",
                 lambda: "Here is api key, but developer removed it, so put api key yourself (demo key is demo key, its limited)",
-                validator=loader.validators.String(),
+                validator=loader.validators.Hidden(),
             ),
         )
         self._api = "https://api.nasa.gov/"
