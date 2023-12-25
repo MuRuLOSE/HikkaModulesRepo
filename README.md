@@ -1,6 +1,6 @@
 # HikkaModulesRepo
 <img src="/assets/banner.png" alt="Bannerr">
-<br>Modules for [Hikka Userbot](https://github.com/hikariatama/Hikka)<br>
+<br>Modules for [Hikka Userbot](https://github.com/hikariatama/Hikka)</br>
 
 ## Links
 <br>[Telegram channel](https://t.me/BruhHikkaModules)<br>
