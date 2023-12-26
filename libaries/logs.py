@@ -4,7 +4,7 @@ import logging
 import asyncio
 
 
-class LogHandler(logging.Handler, Loader.Module):
+class LogHandler(logging.Handler, loader.Module):
     def __init__(self):
         super().__init__()
         
