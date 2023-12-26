@@ -1,6 +1,7 @@
 from .. import loader
 import random
 import logging
+import asyncio
 
 
 class LogHandler(logging.Handler, BHikkamodsLogsLib):
@@ -24,7 +25,7 @@ class LogHandler(logging.Handler, BHikkamodsLogsLib):
 
     def emit(self, record):
         if self.config["send_errors"]:
-            await self.send_log(record)
+            asyncio.run(self.send_log(record))
 
 class BHikkamodsLogsLib(loader.Library):
     developer = "@MuRuLOSE"
