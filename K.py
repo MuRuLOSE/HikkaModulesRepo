@@ -39,3 +39,4 @@ class K(loader.Module):
     async def k(self, message: Message):
         """K"""
         await utils.answer(message, log-test)
+        logger.info("hui")
