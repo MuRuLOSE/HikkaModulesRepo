@@ -36,10 +36,10 @@ class BHikkamodsLogsLib(loader.Library):
                 "send_errors",
                 False,
                 "Send errors to developer for diagnostic",
-                validator=loader.validators.String(),
+                validator=loader.validators.Boolean(),
             ),
             loader.ConfigValue(
-                "send_id"
+                "send_id",
                 False,
                 "Send id with error"
             )
