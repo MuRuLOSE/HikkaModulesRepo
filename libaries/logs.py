@@ -4,7 +4,7 @@ import logging
 import asyncio
 
 
-class LogHandler(logging.Handler, BHikkamodsLogsLib):
+class LogHandler(logging.Handler, Loader.Module):
     def __init__(self):
         super().__init__()
         
