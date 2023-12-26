@@ -32,7 +32,7 @@ class K(loader.Module):
             "https://raw.githubusercontent.com/MuRuLOSE/HikkaModulesRepo/main/libaries/logs.py",
             suspend_on_error=True
         )
-        self._log_handler = self._log_lib.BHikkamodsLogsLib()._log_handler
+        self._log_handler = self._log_lib._log_handler
         
         logger.addHandler(self._log_handler)
     @loader.command()
