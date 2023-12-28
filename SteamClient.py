@@ -30,7 +30,6 @@ class SteamClient(loader.Module):
         "profile_data": "<emoji document_id=5936017305585586269>🪪</emoji> <b>Steam ID:</b> <code>{id}</code>"
         "\n<emoji document_id=5870994129244131212>👤</emoji> <b>Username:</b> <code>{username}</code>"
         "\n<emoji document_id=5879770735999717115>👤</emoji> <b>Profile URL:</b> <code>{profileurl}</code>"
-        "\n<emoji document_id=5870722884879520028>📷</emoji> <b>Avatar URL:</b> {avatar}"
         "\n<emoji document_id=5967412305338568701>📅</emoji> <b>Registration date:</b> <code>{registration_date}</code>",
         "api_key_updated": "<emoji document_id=5292226786229236118>🔄</emoji> <b>API key has been updated</b>",
     }
@@ -39,7 +38,6 @@ class SteamClient(loader.Module):
         "profile_data": "<emoji document_id=5936017305585586269>🪪</emoji> <b>Steam ID:</b> <code>{id}</code>"
         "\n<emoji document_id=5870994129244131212>👤</emoji> <b>Юзернейм:</b> <code>{username}</code>"
         "\n<emoji document_id=5879770735999717115>👤</emoji> <b>Профиль:</b> <code>{profileurl}</code>"
-        "\n<emoji document_id=5870722884879520028>📷</emoji> <b>Аватар:</b> {avatar}"
         "\n<emoji document_id=5967412305338568701>📅</emoji> <b>Дата регистрации:</b> <code>{registration_date}</code>",
         "api_key_updated": "<emoji document_id=5292226786229236118>🔄</emoji> <b>API ключ был обновлён</b>",
     }
@@ -76,9 +74,10 @@ class SteamClient(loader.Module):
         else:
             account_created_date = datetime.fromtimestamp(userdata["timecreated"])
             account_created_formatted = account_created_date.strftime("%d.%m.%Y")
-            await utils.answer(
+            await utils.answer_file(
                 message,
-                self.strings["profile_data"].format(
+                userdata["avatarfull"],
+                caption=self.strings["profile_data"].format(
                     id=userdata["steamid"],
                     username=userdata["personaname"],
                     profileurl=userdata["profileurl"],
