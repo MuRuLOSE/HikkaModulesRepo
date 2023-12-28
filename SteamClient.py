@@ -60,14 +60,17 @@ class SteamClient(loader.Module):
         return data["player"]["steamid"]
 
     @loader.command(
-        ru_doc=" [Юзернейм] (--raw если ты хочешь сырой ответ) - Найти пользователя"
+        ru_doc=" [Юзернейм] (--raw сырой ответ) (--id поиск по id) - Найти пользователя"
     )
     async def searchuser(self, message: Message):
-        """ [Username] (--raw if you want just raw json answer) - Search user"""
+        """ [Username] (--raw  raw json answer) (--id search by id) - Search user"""
         args = utils.get_args_raw(message).split()
 
         user = args[0]
         userdata = self.steam.users.search_user(user)["player"]
+        if "--id" in args:
+            userdata = self.steam.users.get_user_details(int(user))["player"]
+        
         if "--raw" in args:
             return await utils.answer(
                 message, f"<pre><code class='language-json'>{userdata}</code></pre>"
