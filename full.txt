@@ -12,6 +12,7 @@ FuckTagOne
 HTTPCat
 InlineButtons
 morse
+NasaImages
 PasswordUtils
 PinMoreChats
 RandomDog
