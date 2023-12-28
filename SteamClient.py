@@ -52,11 +52,10 @@ class SteamClient(loader.Module):
             )
         )
 
-        self.steam = Steam(self.config["apikey"])
 
     def resolve_id(self, username):
         data = self.steam.users.search_user(username)
-        data["player"]["steamid"]
+        return data["player"]["steamid"]
 
     @loader.command(
         ru_doc=" [Юзернейм] (--raw если ты хочешь сырой ответ) - Найти пользователя"
