@@ -11,6 +11,7 @@ FuckJoins
 FuckTagOne
 HTTPCat
 InlineButtons
+K
 morse
 NasaImages
 PasswordUtils
@@ -20,6 +21,7 @@ RemoveLinks
 ReplaceWords
 SearchersGenQuery
 SpyEVO
+SteamClient
 timer
 YamiManager
 youtubesearcher
