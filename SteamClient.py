@@ -67,10 +67,11 @@ class SteamClient(loader.Module):
         args = utils.get_args_raw(message).split()
 
         user = args[0]
-        userdata = self.steam.users.search_user(user)["player"]
+        userdata = None
         if "--id" in args:
             userdata = self.steam.users.get_user_details(int(user))["player"]
-        
+        else:
+            userdata = self.steam.users.search_user(user)["player"]
         if "--raw" in args:
             return await utils.answer(
                 message, f"<pre><code class='language-json'>{userdata}</code></pre>"
