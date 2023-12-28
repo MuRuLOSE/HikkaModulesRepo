@@ -52,6 +52,8 @@ class SteamClient(loader.Module):
             )
         )
 
+    async def client_ready(self, db, client):
+        self.steam = Steam(self.config["apikey"])
 
     def resolve_id(self, username):
         data = self.steam.users.search_user(username)
