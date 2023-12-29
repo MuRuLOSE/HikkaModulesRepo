@@ -9,6 +9,7 @@ CustomPing
 filters
 FuckJoins
 FuckTagOne
+Genshin
 HTTPCat
 InlineButtons
 K
