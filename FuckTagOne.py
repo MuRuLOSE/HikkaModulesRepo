@@ -17,9 +17,9 @@ from .. import loader, utils
 # meta desc: desc
 # meta developer: @BruhHikkaModules
 
-changelog = "Add config, new version"
+changelog = "Added reply to addignore and removeignore"
 
-__version__ = (1, 1, 0)
+__version__ = (1, 2, 0)
 
 
 @loader.tds
@@ -113,15 +113,20 @@ class FuckTagOne(loader.Module):
                 )
 
     @loader.command(
-        ru_doc=" [id] - Добавить в игнор лист",
+        ru_doc=" [id / reply] - Добавить в игнор лист",
     )
     async def addignore(self, message: Message):
-        """[id] - Add to ignore list"""
+        """[id / reply] - Add to ignore list"""
 
-        args = int(utils.get_args_raw(message))
+        args = utils.get_args_raw(message)
+
+        reply = await message.get_reply_message()
+        
+        if reply:
+            args = reply.from_id 
 
         if args not in self._ignore:
-            self._ignore.append(args)
+            self._ignore.append(int(args))
             await utils.answer(message, self.strings["added_list"].format(id=args))
 
         else:
@@ -129,23 +134,28 @@ class FuckTagOne(loader.Module):
 
     @loader.command(ru_doc=" - Посмотреть кто у вас в игноре")
     async def ignorelist(self, message: Message):
-        """- Check who in ignore"""
+        """ - Check who in ignore"""
         await utils.answer(
             message,
             self.strings["list_ids"].format(ids="\n".join(map(str, self._ignore))),
         )
 
-    @loader.command(ru_doc=" [id] - Удалить из списка игнора")
+    @loader.command(ru_doc=" [id / reply] - Удалить из списка игнора")
     async def removeignore(self, message: Message):
-        """[id] - Remove from ignore list"""
+        """[id / reply] - Remove from ignore list"""
 
-        args = int(utils.get_args_raw(message))
+        args = utils.get_args_raw(message)
+
+        reply = await message.get_reply_message()
+
+        if reply:
+            args = reply.from_id
 
         if args not in self._ignore:
             await utils.answer(message, self.strings["not_in_list"])
 
         else:
-            self._ignore.remove(args)
+            self._ignore.remove(int(args))
             await utils.answer(
                 message, self.strings["removed_from_ignore"].format(id=args)
             )
