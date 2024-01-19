@@ -1,6 +1,7 @@
 from hikkatl.types import Message
 from collections import Counter
 import logging
+import asyncio
 from .. import loader, utils
 
 logger = logging.getLogger(__name__)
@@ -18,8 +19,8 @@ logger = logging.getLogger(__name__)
     📜 Licensed under the GNU AGPLv3	
 '''
 
-# meta banner: link
-# meta desc: desc
+# meta banner: https://0x0.st/s/Q4Hen86h2PuzHWVxH0OOCQ/H0YO.jpg
+# meta desc: Module for cheat in MindGame
 # meta developer: @BruhHikkaModules
 
 
@@ -37,23 +38,29 @@ class MindGameCheat(loader.Module):
         "finded": "<emoji document_id=5206607081334906820>✔️</emoji> <b>Эмоджи найден!</b>"
     }
 
-    @loader.command()
-    async def mcheat(self, message: Message):
-        """ - [reply to MindGame] - Find emoji"""
-        await utils.answer(message, self.strings["wait"])
-
-        reply = await message.get_reply_message()
-        
+    def find_emoji(self, reply: Message):
         emojis = [
-            button.text
-            for row in reply.reply_markup.rows
-            for button in row.buttons
-        ]
+                button.text
+                for row in reply.reply_markup.rows
+                for button in row.buttons
+            ]
 
         counter = Counter(emojis)
         different_emoji = ''.join([emoji for emoji, count in counter.items() if count == 1])
 
         emoji_index = emojis.index(different_emoji)
+
+        return emoji_index
+
+    @loader.command()
+    async def mcheat(self, message: Message):
+        """ - [reply to MindGame] - Find emoji"""
+
+        await utils.answer(message, self.strings["wait"])
+
+        reply = await message.get_reply_message()
+
+        emoji_index = self.find_emoji(reply)
 
         await reply.click(emoji_index)
 
