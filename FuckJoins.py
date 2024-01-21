@@ -102,4 +102,5 @@ class FuckJoins(loader.Module):
                     message.chat_id,
                     file=path,
                     caption=f"Вот ваш измененный модуль {args}!",
+                    reply_to=await self._common._topic_resolver() or None
                 )
