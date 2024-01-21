@@ -46,6 +46,13 @@ class FuckJoins(loader.Module):
         "no-args-reply": "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Вы не ответили на файл, не указали аргументов</b>",
     }
 
+    async def client_ready(self, client, db):
+        self._common = await self.import_lib(
+            "https://raw.githubusercontent.com/MuRuLOSE/HikkaModulesRepo/main/libaries/common.py",
+            suspend_on_error=True
+        )
+
+
     @loader.command(
         ru_doc="[Ответ на файл / ссылка на сырой код] - Удалить JoinChannelRequest",
     )
@@ -77,6 +84,7 @@ class FuckJoins(loader.Module):
                         message.chat_id,
                         file=path + ".py",
                         caption=f"Вот ваш измененный модуль {(reply).media.document.attributes[0].file_name}!",
+                        reply_to=await self._common._topic_resolver() or None
                     )
 
         else:
