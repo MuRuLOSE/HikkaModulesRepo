@@ -84,7 +84,7 @@ class FuckJoins(loader.Module):
                         message.chat_id,
                         file=path + ".py",
                         caption=f"Вот ваш измененный модуль {(reply).media.document.attributes[0].file_name}!",
-                        reply_to=await self._common._topic_resolver() or None
+                        reply_to=await self._common._topic_resolver(message) or None
                     )
 
         else:
@@ -102,5 +102,5 @@ class FuckJoins(loader.Module):
                     message.chat_id,
                     file=path,
                     caption=f"Вот ваш измененный модуль {args}!",
-                    reply_to=await self._common._topic_resolver() or None
+                    reply_to=await self._common._topic_resolver(message) or None
                 )
