@@ -18,6 +18,7 @@ morse
 NasaImages
 PasswordUtils
 PinMoreChats
+VKMusic
 RandomDog
 RemoveLinks
 ReplaceWords
