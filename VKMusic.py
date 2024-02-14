@@ -55,7 +55,6 @@ class VKMusicAPI:
                     },
                 ) as response:
                     data = await response.json()
-                    logger.info(data)
                     try:
                         audio = data["response"]["audio"]
                         return audio
@@ -127,9 +126,6 @@ class VKMusic(loader.Module):
         self._vkmusic = VKMusicAPI(
             str(self.config["user_id"]), str(self.config["token"])
         )
-
-        logger.info(self.config["user_id"])
-        logger.info(self.config["token"])
 
         music = await self._vkmusic.get_music()
 
