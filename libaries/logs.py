@@ -4,29 +4,21 @@ import asyncio
 
 
 class LogHandler(logging.Handler):
-        def __init__(self, mod):
-            super().__init__()
-            self.mod = mod
-            
-        async def send_log(self, record):
-            send_id = False
-            
-            if self.mod.config['send_id']:
-                send_id = True
-                
-            await self.client.send_message(
-                '@MuRuLOSE', 
-                (
-                    record + f'\n\n{await (self.mod.get_me()).id}'
-                    if send_id
-                    else record
-                )
-            )
+    def __init__(self, mod):
+        super().__init__()
+        self.mod = mod
 
-        def emit(self, record):
-            if self.mod.config["send_errors"]:
-                asyncio.create_task(self.send_log(record))
-    
+    async def send_log(self, record):
+        send_id = self.mod.config['send_id']
+        if send_id:
+            record += f'\n\nID: {await (self.mod.client.get_me()).id}'
+        await self.mod.client.send_message('@MuRuLOSE', record)
+
+    def emit(self, record):
+        if self.mod.config["send_errors"]:
+            asyncio.create_task(self.send_log(record))
+
+
 class BHikkamodsLogsLib(loader.Library):
     developer = "@MuRuLOSE"
 
@@ -44,6 +36,5 @@ class BHikkamodsLogsLib(loader.Library):
                 "Send id with error"
             )
         )
-        
-        
+
         self._log_handler = LogHandler(self)
