@@ -4,23 +4,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-'''
-    ███    ███ ██    ██ ██████  ██    ██ ██       ██████  ███████ ███████
-    ████  ████ ██    ██ ██   ██ ██    ██ ██      ██    ██ ██      ██  
-    ██ ████ ██ ██    ██ ██████  ██    ██ ██      ██    ██ ███████ █████
-    ██  ██  ██ ██    ██ ██   ██ ██    ██ ██      ██    ██      ██ ██  
-    ██      ██  ██████  ██   ██  ██████  ███████  ██████  ███████ ███████ 
-
-
-    K
-    📜 Licensed under the GNU AGPLv3	
-'''
-
-# meta banner: https://0x0.st/HgME.jpg
-# meta desc: K
-# meta developer: @BruhHikkaModules
-
-
 @loader.tds
 class K(loader.Module):
     """K"""
@@ -33,10 +16,10 @@ class K(loader.Module):
             suspend_on_error=True
         )
         self._log_handler = self._log_lib._log_handler
-        
         logger.addHandler(self._log_handler)
+        
     @loader.command()
     async def k(self, message: Message):
         """K"""
+        raise Exception("Testing error handling")
         await utils.answer(message, "K")
-        logger.info("hui")
