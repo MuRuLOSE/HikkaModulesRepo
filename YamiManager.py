@@ -54,10 +54,10 @@ class YamiManager(loader.Module):
 
     async def client_ready(self, client, db):
         raise loader.LoadError(
-            "<a href='t.me/yamichat_bot'>Yami has been deleted,</a>"
+            "@YamiChat_bot has been deleted,</a>"
             " so module isn't work, and you can't load it (actually"
             " you can, but it pointless)"
-            "\nMore about this: <a href='https://t.me/BruhHikkaModules/603'*click*</a>"
+            "\nMore about this: https://t.me/BruhHikkaModules/603"
         )
 
     def __init__(self):
