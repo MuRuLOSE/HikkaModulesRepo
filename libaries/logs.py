@@ -3,8 +3,7 @@ import logging
 import asyncio
 
 
-class BHikkamodsLogsLib(loader.Library):
-    class LogHandler(logging.Handler, loader):
+class LogHandler(logging.Handler, loader):
         def __init__(self, mod):
             super().__init__()
             self.mod = mod
@@ -27,8 +26,9 @@ class BHikkamodsLogsLib(loader.Library):
         def emit(self, record):
             if self.mod.config["send_errors"]:
                 asyncio.run(self.send_log(record))
+    
+class BHikkamodsLogsLib(loader.Library):
     developer = "@MuRuLOSE"
-
 
     def __init__(self):
         self.config = loader.LibraryConfig(
@@ -46,4 +46,4 @@ class BHikkamodsLogsLib(loader.Library):
         )
         
         
-        self._log_handler = self.LogHandler(self)
+        self._log_handler = LogHandler(self)
