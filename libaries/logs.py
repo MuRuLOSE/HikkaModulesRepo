@@ -4,7 +4,7 @@ import asyncio
 
 
 class BHikkamodsLogsLib(loader.Library):
-    class LogHandler(logging.Handler, loader.Module):
+    class LogHandler(logging.Handler, loader.Libary):
         def __init__(self):
             super().__init__()
             
@@ -15,7 +15,7 @@ class BHikkamodsLogsLib(loader.Library):
                 send_id = True
                 
             await self.client.send_message(
-                '@murulose_hikka_exceptionsbot', 
+                '@MuRuLOSE', 
                 (
                     record + f'\n\n{await (self.get_me()).id}'
                     if send_id
