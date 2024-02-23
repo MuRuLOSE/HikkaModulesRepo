@@ -25,7 +25,7 @@ class LogHandler(logging.Handler):
 
         def emit(self, record):
             if self.mod.config["send_errors"]:
-                asyncio.run(self.send_log(record))
+                asyncio.create_task(self.send_log(record))
     
 class BHikkamodsLogsLib(loader.Library):
     developer = "@MuRuLOSE"
