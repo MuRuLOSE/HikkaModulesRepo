@@ -3,7 +3,7 @@ import logging
 import asyncio
 
 
-class LogHandler(logging.Handler, loader):
+class LogHandler(logging.Handler):
         def __init__(self, mod):
             super().__init__()
             self.mod = mod
