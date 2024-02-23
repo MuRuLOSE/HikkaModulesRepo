@@ -52,6 +52,14 @@ class YamiManager(loader.Module):
         "_cls_doc": "Модуль для @YamiChat_bot",
     }
 
+    async def client_ready(self, client, db):
+        raise loader.LoadError(
+            "<a href='t.me/yamichat_bot'>Yami has been deleted,</a>"
+            " so module isn't work, and you can't load it (actually"
+            " you can, but it pointless)"
+            "\nMore about this: <a href='https://t.me/BruhHikkaModules/603'*click*</a>"
+        )
+
     def __init__(self):
         self.bot = "YamiChat_bot"
 
