@@ -1,5 +1,6 @@
 autogiveawayjoin
 autoreader
+AutoLeave
 BashWatcher
 ChannelCheck
 CheckTime
