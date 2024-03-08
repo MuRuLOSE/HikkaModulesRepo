@@ -52,6 +52,75 @@ class FuckJoins(loader.Module):
             suspend_on_error=True
         )
 
+    def get_username(self, string):
+        pattern = "(.*)"
+        match = re.search(pattern, string, re.DOTALL)
+        if match:
+            return match.group(1)
+        else:
+            logging.info("No match")
+
+
+    @loader.command(
+        ru_doc="[Ответ на файл / ссылка на сырой код (не работает)] - Заменить JoinChannelRequest на self.request_join",
+    )
+    async def rjoinsrjoin(self, message: Message):
+        """ [Reply to file / link to raw code (not work)] - Replace JoinChannelRequest to self.request_join"""
+        pattern = r'(await\s+client|self\.client|self\._client)\(JoinChannelRequest\([^)]*\)\)'
+
+        args = utils.get_args_raw(message)
+
+        await utils.answer(message, self.strings("wait"))
+
+        if not args:
+            reply = await message.get_reply_message()
+
+            if not reply:
+                return await utils.answer(self.strings["no-args-reply"])
+            else:
+                username = ""
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    characters = string.ascii_letters + string.digits
+                    filename = "".join(random.choice(characters) for _ in range(32))
+                    path = tmpdir + "/" + filename
+                    await reply.download_media(path)
+                    with open(path + ".py", "r") as f:
+                        code = f.read()
+                        match = re.search("JoinChannelRequest\((.*?)\)", code)
+                        if match:
+                            jcr_str = match.group(1)
+                            username = self.get_username(jcr_str)
+                            new_code = re.sub(pattern, f"await self.request_join({username}, 'The city can sleep easy, because the FuckJoins module has destroyed the nasty JoinChannelRequest.')", code)
+                    with open(path + ".py", "w") as f:
+                        f.write(new_code)
+                    await self.client.send_file(
+                        message.chat_id,
+                        file=path + ".py",
+                        caption=f"Вот ваш измененный модуль {(reply).media.document.attributes[0].file_name}!",
+                        reply_to=await self._common._topic_resolver(message) or None
+                    )
+
+        else:
+            code = (await utils.run_sync(requests.get, args)).content.decode()
+
+            match = re.search("JoinChannelRequest\((.*?)\)", code)
+            if match:
+                jcr_str = match.group(1)
+                username = self.get_username(jcr_str)
+                new_code = re.sub(pattern, f"await self.request_join({username}, 'The city can sleep easy, because the FuckJoins module has destroyed the nasty JoinChannelRequest.')", code)
+
+            with tempfile.TemporaryDirectory() as tmpdir:
+                characters = string.ascii_letters + string.digits
+                filename = "".join(random.choice(characters) for _ in range(32))
+                path = tmpdir + "/" + filename + ".py"
+                with open(path, "x") as f:
+                    f.write(new_code)
+                return await self.client.send_file(
+                    message.chat_id,
+                    file=path,
+                    caption=f"Вот ваш измененный модуль {args}!",
+                    reply_to=await self._common._topic_resolver(message) or None
+                )
 
     @loader.command(
         ru_doc="[Ответ на файл / ссылка на сырой код] - Удалить JoinChannelRequest",
