@@ -7,7 +7,6 @@ CheckTime
 compliments
 controlspam
 CustomPing
-Emojis
 filters
 FindID
 FuckJoins
@@ -27,6 +26,7 @@ ReplaceWords
 SearchersGenQuery
 SpyEVO
 SteamClient
+TempJoinChannel
 timer
 VKMusic
 YamiManager
