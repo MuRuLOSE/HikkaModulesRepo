@@ -1,13 +1,15 @@
 autogiveawayjoin
-autoreader
 AutoLeave
+autoreader
 BashWatcher
 ChannelCheck
 CheckTime
 compliments
 controlspam
 CustomPing
+Emojis
 filters
+FindID
 FuckJoins
 FuckTagOne
 Genshin
@@ -19,7 +21,6 @@ morse
 NasaImages
 PasswordUtils
 PinMoreChats
-VKMusic
 RandomDog
 RemoveLinks
 ReplaceWords
@@ -27,5 +28,6 @@ SearchersGenQuery
 SpyEVO
 SteamClient
 timer
+VKMusic
 YamiManager
 youtubesearcher
