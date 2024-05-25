@@ -36,6 +36,10 @@ class TempJoinChannel(loader.Module):
         "leaved": "<emoji document_id=5974506040828366250>🚪</emoji> <i>Все каналы исчезли...</i>"
     }
 
+    async def client_ready(self, client, db):
+        self._db = db
+        
+
     def __init__(self):
         self._lock = False # if cleaning channels, cmd locking
         self._channels = self.pointer("channels", [])
