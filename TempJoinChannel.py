@@ -37,8 +37,8 @@ class TempJoinChannel(loader.Module):
     }
 
     async def client_ready(self, client, db):
-        self._db = db
-        
+        self.db = db
+
 
     def __init__(self):
         self._lock = False # if cleaning channels, cmd locking
