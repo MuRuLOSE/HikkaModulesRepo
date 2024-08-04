@@ -24,7 +24,7 @@ from telethon.errors.common import AlreadyInConversationError
 
 @loader.tds
 class YamiManager(loader.Module):
-    """Module for @YamiChat_bot"""
+    """Module for @YamiChat_bot """
 
     strings = {
         "name": "YamiManager",
@@ -51,14 +51,6 @@ class YamiManager(loader.Module):
         "copyright": "Результат из <a href='tg://resolve?domain=YamiChat_bot'>бота Ями 💘</a>",
         "_cls_doc": "Модуль для @YamiChat_bot",
     }
-
-    async def client_ready(self, client, db):
-        raise loader.LoadError(
-            "@YamiChat_bot has been deleted,</a>"
-            " so module isn't work, and you can't load it (actually"
-            " you can, but it pointless)"
-            "\nMore about this: https://t.me/BruhHikkaModules/603"
-        )
 
     def __init__(self):
         self.bot = "YamiChat_bot"
