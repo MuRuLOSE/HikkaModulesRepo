@@ -27,7 +27,7 @@ from .. import loader, utils
 # meta desc: Download youtube videos
 # meta developer: @BruhHikkaModules
 
-# requires: yd-dlp[default]
+# requires: yt-dlp[default]
 
 logger = logging.getLogger("YoutubeDL")
 
