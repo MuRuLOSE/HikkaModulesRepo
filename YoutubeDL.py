@@ -63,8 +63,6 @@ async def check_ffmpeg():
 
     return status
 
-
-
 @loader.tds
 class YoutubeDL(loader.Module):
     """Download youtube videos"""
@@ -73,14 +71,29 @@ class YoutubeDL(loader.Module):
         "name": "YoutubeDL",
         "updated": "Libary updated",
         "downloaded": "Video downloaded!",
-        "wait": "Ожидайте"
+        "wait": "Wait...",
+        "noargs": "No arguments",
+        "addedchannel": "Channel added"
     }
+
     strings_ru = {
         "_cls_doc": "Скачивайте ютуб ролики",
         "updated": "Библиотека обновлена",
-        "downloaded": "Видео скачено!",
-        "wait": "Ожидайте..."
+        "downloaded": "Видео скачано!",
+        "wait": "Ожидайте...",
+        "noargs": "Нет аргументов",
+        "addedchannel": "Канал добавлен"
     }
+    
+    def __init__(self):
+        self.config = loader.ModuleConfig(
+            loader.ConfigValue(
+                "channels",
+                [],
+                "xfdX123L",
+                validator=loader.validators.Series()
+            )
+        )
         
     async def client_ready(self, client, db):
         status = await check_ffmpeg()
@@ -89,6 +102,43 @@ class YoutubeDL(loader.Module):
             logger.info("ffmpeg not installed")
         if not status['ffprobe']:
             logger.info("ffprobe not installed")
+
+        self._common = await self.import_lib(
+            "https://raw.githubusercontent.com/MuRuLOSE/HikkaModulesRepo/main/libaries/common.py",
+            suspend_on_error=True
+        )
+
+
+        self._utils_chat, _ = await utils.asset_channel(
+            self._client,
+            "YoutubeDL // Chat",
+            "Utils chat for YoutubeDL",
+            silent=True,
+            archive=True,
+            _folder="hikka",
+        )
+
+    @loader.loop(autostart=True, interval=60)
+    async def loop(self):
+        for channel in self.config['channels']:
+            with tempfile.TemporaryDirectory() as tempdir:
+                ydl_opts = {
+                    'outtmpl': os.path.join(tempdir, '%(title)s.%(ext)s'),
+                    'download_archive': 'dontremoveyoutubedlarchive.txt',
+                    'format': 'best',
+                }
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    ydl.download(channel)
+
+                downloaded_files = os.listdir(tempdir)
+
+                for file in downloaded_files:
+                    full_path = os.path.join(tempdir, file)
+                    await self.client.send_file(
+                        self._utils_chat,
+                        file=full_path,
+                        caption=self.strings["downloaded"]
+                    )
 
     @loader.command(
         ru_doc=" - [Ссылка] Скачать видео"
@@ -119,6 +169,21 @@ class YoutubeDL(loader.Module):
                         full_path,
                         self.strings["downloaded"]
                     )
+
+    @loader.command(
+        ru_doc=" - [Channel name (https://www.youtube.com/c/ChannelName/videos)] Add channel to subscriptions"
+    )
+    async def addchannel(self, message: Message):
+        args = utils.get_args_raw(message)
+        if args:
+            self.config['channels'] = self.config["channels"].append(args)
+            await utils.answer(
+                message, 
+                self.strings["addedchannel"],
+                reply_to=await self._common._topic_resolver(message) or None
+            )
+        else:
+            await utils.answer(message, self.strings["noargs"])
 
     @loader.command(
         ru_doc=" - Обновить библиотеку (если модуль не качает видео)"
