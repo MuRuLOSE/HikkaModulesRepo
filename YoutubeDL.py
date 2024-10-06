@@ -92,6 +92,12 @@ class YoutubeDL(loader.Module):
                 [],
                 "xfdX123L",
                 validator=loader.validators.Series()
+            ),
+            loader.ConfigValue(
+                "proxyurl",
+                "http://host:port",
+                "URL for proxy (http, https, socks5)",
+                validator=loader.validators.Hidden()
             )
         )
         
@@ -151,11 +157,18 @@ class YoutubeDL(loader.Module):
             await utils.answer(message, self.strings["wait"])
             
             with tempfile.TemporaryDirectory() as tempdir:
-
-                ydl_opts = {
-                    'format': 'best',
-                    'outtmpl': os.path.join(tempdir, '%(title)s.%(ext)s')
-                }
+                if self.config["proxyurl"] == "http://host:port":
+                    ydl_opts = {
+                        'format': 'best',
+                        'outtmpl': os.path.join(tempdir, '%(title)s.%(ext)s'),
+                    }
+                else:
+                    ydl_opts = {
+                        'format': 'best',
+                        'outtmpl': os.path.join(tempdir, '%(title)s.%(ext)s'),
+                        'proxy': self.config["proxyurl"]
+                    }
+                
 
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     ydl.download([args])
