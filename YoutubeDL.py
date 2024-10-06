@@ -151,27 +151,28 @@ class YoutubeDL(loader.Module):
     )
     async def ydownload(self, message: Message):
         """ - [Link] Download video"""
-        args = utils.get_args_raw(message)
+        args_raw = utils.get_args_raw(message)
+        args = args_raw.split()
 
         if args:
             await utils.answer(message, self.strings["wait"])
             
             with tempfile.TemporaryDirectory() as tempdir:
-                if self.config["proxyurl"] == "http://host:port":
-                    ydl_opts = {
-                        'format': 'best',
-                        'outtmpl': os.path.join(tempdir, '%(title)s.%(ext)s'),
-                    }
-                else:
+                if "--proxy" in args:
                     ydl_opts = {
                         'format': 'best',
                         'outtmpl': os.path.join(tempdir, '%(title)s.%(ext)s'),
                         'proxy': self.config["proxyurl"]
                     }
+                else:
+                    ydl_opts = {
+                        'format': 'best',
+                        'outtmpl': os.path.join(tempdir, '%(title)s.%(ext)s'),
+                    }
                 
 
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    ydl.download([args])
+                    ydl.download([args[0]])
 
                 downloaded_files = os.listdir(tempdir)
 
