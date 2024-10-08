@@ -1,6 +1,6 @@
 from hikkatl.types import Message
 from .. import loader, utils
-from steam import Steam
+from steam_web_api import Steam
 from datetime import datetime
 
 """
@@ -18,7 +18,7 @@ from datetime import datetime
 # meta banner: link
 # meta desc: desc
 # meta developer: @BruhHikkaModules
-# requires: python-steam-api beautifulsoup4
+# requires: steam beautifulsoup4
 
 
 @loader.tds
@@ -29,6 +29,7 @@ class SteamClient(loader.Module):
         "name": "SteamClient",
         "profile_data": "<emoji document_id=5936017305585586269>🪪</emoji> <b>Steam ID:</b> <code>{id}</code>"
         "\n<emoji document_id=5870994129244131212>👤</emoji> <b>Username:</b> <code>{username}</code>"
+        "\n<emoji document_id=5933613451044720529>🙂</emoji> <b>Steam level:</b> <code>{level}</code>"
         "\n<emoji document_id=5879770735999717115>👤</emoji> <b>Profile URL:</b> <code>{profileurl}</code>"
         "\n<emoji document_id=5967412305338568701>📅</emoji> <b>Registration date:</b> <code>{registration_date}</code>",
         "api_key_updated": "<emoji document_id=5292226786229236118>🔄</emoji> <b>API key has been updated</b>",
@@ -37,6 +38,7 @@ class SteamClient(loader.Module):
     strings_ru = {
         "profile_data": "<emoji document_id=5936017305585586269>🪪</emoji> <b>Steam ID:</b> <code>{id}</code>"
         "\n<emoji document_id=5870994129244131212>👤</emoji> <b>Юзернейм:</b> <code>{username}</code>"
+        "\n<emoji document_id=5933613451044720529>🙂</emoji> <b>Уроверь Steam:</b> <code>{level}</code>"
         "\n<emoji document_id=5879770735999717115>👤</emoji> <b>Профиль:</b> <code>{profileurl}</code>"
         "\n<emoji document_id=5967412305338568701>📅</emoji> <b>Дата регистрации:</b> <code>{registration_date}</code>",
         "api_key_updated": "<emoji document_id=5292226786229236118>🔄</emoji> <b>API ключ был обновлён</b>",
@@ -67,11 +69,17 @@ class SteamClient(loader.Module):
         args = utils.get_args_raw(message).split()
 
         user = args[0]
+
+        
+
         userdata = None
         if "--id" in args:
             userdata = self.steam.users.get_user_details(int(user))["player"]
+            level = self.steam.users.get_user_steam_level(int(user))["player_level"]
         else:
             userdata = self.steam.users.search_user(user)["player"]
+            uid = self.resolve_id(user)
+            level = self.steam.users.get_user_steam_level(uid)["player_level"]
         if "--raw" in args:
             return await utils.answer(
                 message, f"<pre><code class='language-json'>{userdata}</code></pre>"
@@ -85,6 +93,7 @@ class SteamClient(loader.Module):
                 caption=self.strings["profile_data"].format(
                     id=userdata["steamid"],
                     username=userdata["personaname"],
+                    level=level,
                     profileurl=userdata["profileurl"],
                     avatar=userdata["avatar"],
                     registration_date=account_created_formatted,
