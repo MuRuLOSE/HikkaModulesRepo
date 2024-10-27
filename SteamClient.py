@@ -18,7 +18,7 @@ from datetime import datetime
 # meta banner: link
 # meta desc: desc
 # meta developer: @BruhHikkaModules
-# requires: steam beautifulsoup4
+# requires: python-steam-api beautifulsoup4
 
 
 @loader.tds
@@ -70,7 +70,7 @@ class SteamClient(loader.Module):
 
         user = args[0]
 
-        
+        debug = False
 
         userdata = None
         if "--id" in args:
