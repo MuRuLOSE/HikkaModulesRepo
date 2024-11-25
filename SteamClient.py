@@ -2,6 +2,7 @@ from hikkatl.types import Message
 from .. import loader, utils
 from steam_web_api import Steam
 from datetime import datetime
+import logging
 
 """
     ███    ███ ██    ██ ██████  ██    ██ ██       ██████  ███████ ███████
@@ -19,6 +20,8 @@ from datetime import datetime
 # meta desc: desc
 # meta developer: @BruhHikkaModules
 # requires: python-steam-api beautifulsoup4
+
+logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -55,7 +58,13 @@ class SteamClient(loader.Module):
             "\n    <b>Число VAC-BANов</b>: <code>{numberofvacbans}</code>"
             "\n    <b>Дни с последнего VAC-BANа</b>: <code>{dayslastvac}</code>"
             "\n    <b>Число игровых банов</b>: <code>{numberofgamebans}</code>",
-        "vac_ban_title": "<b>Информация о банах</b> <code>{}</code>:"
+        "vac_ban_title": "<b>Информация о банах</b> <code>{}</code>:",
+        "game_info_title": "<b>Информация о играх</b> <code>{}</code>",
+        "game_info_template": 
+            "\n    <b>Название:</b> <code>{name}</code>"
+            "\n    <b>Наиграно всего:</b> <code>{playtime_forever}</code>мин"
+            "\n    <b>Наиграно за последние 2 недели:</b> <code>{playtime_2weeks}</code>мин"
+            "\n    <b>Последний запуск:</b> <code>{lastplay}</code>",
     }
 
     def __init__(self):
@@ -67,6 +76,7 @@ class SteamClient(loader.Module):
                 validator=loader.validators.Hidden(),
             )
         )
+        self.debug = False
 
     async def client_ready(self, db, client):
         self.steam = Steam(self.config["apikey"])
@@ -76,15 +86,13 @@ class SteamClient(loader.Module):
         return data["player"]["steamid"]
 
     @loader.command(
-        ru_doc=" [Юзернейм] (--raw сырой ответ) (--id поиск по id) - Найти пользователя"
+        ru_doc=" [Юзернейм] Найти пользователя (--id поиск по id)"
     )
     async def searchuser(self, message: Message):
         """ [Username] (--raw  raw json answer) (--id search by id) - Search user"""
         args = utils.get_args_raw(message).split()
 
         user = args[0]
-
-        debug = False
 
         userdata = None
         if "--id" in args:
@@ -98,39 +106,35 @@ class SteamClient(loader.Module):
             level = self.steam.users.get_user_steam_level(uid)["player_level"]
             vacdata = self.steam.users.get_player_bans(uid)["players"][0]
 
-        if "--raw" in args:
-            return await utils.answer(
-                message, f"<pre><code class='language-json'>{userdata}</code></pre>"
-            )
-        else:
-            vacinfo = self.strings["vac_ban"].format(
-                vacbanned=vacdata["VACBanned"],
-                numberofvacbans=vacdata["NumberOfVACBans"],
-                dayslastvac=vacdata["DaysSinceLastBan"],
-                numberofgamebans=vacdata["NumberOfGameBans"]
-            )
+        
+        vacinfo = self.strings["vac_ban"].format(
+            vacbanned=vacdata["VACBanned"],
+            numberofvacbans=vacdata["NumberOfVACBans"],
+            dayslastvac=vacdata["DaysSinceLastBan"],
+            numberofgamebans=vacdata["NumberOfGameBans"]
+        )
 
-            account_created_date = datetime.fromtimestamp(userdata["timecreated"])
-            account_created_formatted = account_created_date.strftime("%d.%m.%Y")
-            await utils.answer_file(
-                message,
-                userdata["avatarfull"],
-                caption=self.strings["profile_data"].format(
-                    id=userdata["steamid"],
-                    username=userdata["personaname"],
-                    level=level,
-                    profileurl=userdata["profileurl"],
-                    vacinfo=vacinfo,
-                    avatar=userdata["avatar"],
-                    registration_date=account_created_formatted,
-                ),
-            )
+        account_created_date = datetime.fromtimestamp(userdata["timecreated"])
+        account_created_formatted = account_created_date.strftime("%d.%m.%Y")
+        await utils.answer_file(
+            message,
+            userdata["avatarfull"],
+            caption=self.strings["profile_data"].format(
+                id=userdata["steamid"],
+                username=userdata["personaname"],
+                level=level,
+                profileurl=userdata["profileurl"],
+                vacinfo=vacinfo,
+                avatar=userdata["avatar"],
+                registration_date=account_created_formatted,
+            ),
+        )
 
     @loader.command(
-        ru_doc=" - [Юзернейм] Информация о VAC-BANах пользователя (--raw сырой ответ) (--id поиск по id)"
+        ru_doc=" [Юзернейм] Информация о VAC-BANах пользователя (--id поиск по id)"
     )
     async def vacbaninfo(self, message: Message):
-        ''' - [Username] Informbation about user VAC-BANs  (--raw raw json answer) (--id search by id)'''
+        ''' [Username] Informbation about user VAC-BANs (--id search by id)'''
 
         args = utils.get_args_raw(message).split()
 
@@ -144,23 +148,93 @@ class SteamClient(loader.Module):
             userdata = self.steam.users.search_user(user)["player"]
             uid = self.resolve_id(user)
             vacdata = self.steam.users.get_player_bans(uid)["players"][0]
+        
+        vacinfo = self.strings["vac_ban"].format(
+            vacbanned=vacdata["VACBanned"],
+            numberofvacbans=vacdata["NumberOfVACBans"],
+            dayslastvac=vacdata["DaysSinceLastBan"],
+            numberofgamebans=vacdata["NumberOfGameBans"]
+        )
+        vactitle = self.strings["vac_ban_title"]
+        await utils.answer(
+            message, 
+            response=vactitle.format(userdata["personaname"]) + vacinfo
+        )
 
-        if "--raw" in args:
-            return await utils.answer(
-                message, f"<pre><code class='language-json'>{vacdata}</code></pre>"
+    @loader.command(
+        ru_doc=" - [Юзернейм] Информация о играх пользователя (--id поиск по id)"
+    )
+    async def gameownedlist(self, message: Message):
+        ''' - [Username] Informbation about user games (--id search by id)'''
+
+        args = utils.get_args_raw(message).split()
+
+        user = args[0]
+        
+        if "--id" in args:
+            userdata = self.steam.users.get_user_details(int(user))["player"]
+            gamedata = self.steam.users.get_owned_games(user)['games']
+
+        else:
+            userdata = self.steam.users.search_user(user)["player"]
+            uid = self.resolve_id(user)
+            gamedata = self.steam.users.get_owned_games(uid)['games']
+        
+        # инфо о играх vacinfo = self.strings["vac_ban"].format(
+            #vacbanned=vacdata["VACBanned"],
+            #numberofvacbans=vacdata["NumberOfVACBans"],
+            #dayslastvac=vacdata["DaysSinceLastBan"],
+            #numberofgamebans=vacdata["NumberOfGameBans"]
+        #)
+
+        gameinfo_templates = [] 
+        for info in gamedata:
+            try:
+                info['playtime_2weeks']
+            except KeyError:
+                gameinfo = self.strings["game_info_template"].format(
+                    name=info['name'],
+                    playtime_forever=info['playtime_forever'],
+                    playtime_2weeks=0,
+                    lastplay=info['rtime_last_played']
+                )
+            else:
+                gameinfo = self.strings["game_info_template"].format(
+                    name=info['name'],
+                    playtime_forever=info['playtime_forever'],
+                    playtime_2weeks=info['playtime_2weeks'],
+                    lastplay=info['rtime_last_played']
+                )
+
+            gameinfo_templates.append(gameinfo)
+
+        print(gameinfo)
+        logger.info(gameinfo.join('\n'))
+    
+        await utils.answer(
+            message, 
+            response=self.strings['game_info_title'].format(userdata["personaname"]) 
+            + '\n\n'.join(gameinfo_templates)
+        )
+
+    @loader.command()
+    async def execsteamcode(self, message: Message):
+        ''' DO NOT USE THIS COMMAND! IT ONLY WORKS WHEN DEBUGGING IS ENABLED! THIS COMMAND IS FOR DEVELOPER'''
+        if not self.debug:
+            await utils.answer(
+            message, 
+            "this command does nothing if debug-mode is not enabled."
+            "don't try to use it." 
+            "even if you get into the code and enable debug-mode, all responsibility for actions with this command is yours."
             )
         else:
-            vacinfo = self.strings["vac_ban"].format(
-                vacbanned=vacdata["VACBanned"],
-                numberofvacbans=vacdata["NumberOfVACBans"],
-                dayslastvac=vacdata["DaysSinceLastBan"],
-                numberofgamebans=vacdata["NumberOfGameBans"]
-            )
-            vactitle = self.strings["vac_ban_title"]
-            await utils.answer(
-                message, 
-                response=vactitle.format(userdata["personaname"]) + vacinfo
-            )
+            environment = {
+                'client': self.steam
+            }
+            args = utils.get_args_raw(message)
+
+            await utils.answer(message, str(eval(args, environment)))
+
     @loader.command(
         ru_doc=" - Обновить API ключ"
     )
