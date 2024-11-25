@@ -42,7 +42,13 @@ class SteamClient(loader.Module):
             "\n    <b>Number of VAC-BANs</b>: <code>{numberofvacbans}</code>"
             "\n    <b>Days since last VAC-BAN</b>: <code>{dayslastvac}</code>"
             "\n    <b>Number of game bans</b>: <code>{numberofgamebans}</code>",
-        "vac_ban_title": "<b>Information about bans of</b> <code>{}</code>:"
+        "vac_ban_title": "<b>Information about bans of</b> <code>{}</code>:",
+        "game_info_title": "<b>Information about games of</b> <code>{}</code>",
+        "game_info_template": 
+            "\n    <b>Name:</b> <code>{name}</code>"
+            "\n    <b>Total playtime:</b> <code>{playtime_forever}</code>minutes"
+            "\n    <b>Played in the last two weeks:</b> <code>{playtime_2weeks}</code>minutes"
+            "\n    <b>Last launch:</b> <code>{lastplay}</code>",
     }
 
     strings_ru = {
