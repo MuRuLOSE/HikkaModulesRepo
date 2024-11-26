@@ -195,22 +195,12 @@ class SteamClient(loader.Module):
 
         gameinfo_templates = [] 
         for info in gamedata:
-            try:
-                info['playtime_2weeks']
-            except KeyError:
-                gameinfo = self.strings["game_info_template"].format(
-                    name=info['name'],
-                    playtime_forever=info['playtime_forever'],
-                    playtime_2weeks=0,
-                    lastplay=info['rtime_last_played']
-                )
-            else:
-                gameinfo = self.strings["game_info_template"].format(
-                    name=info['name'],
-                    playtime_forever=info['playtime_forever'],
-                    playtime_2weeks=info['playtime_2weeks'],
-                    lastplay=info['rtime_last_played']
-                )
+            gameinfo = self.strings["game_info_template"].format(
+                name=info['name'],
+                playtime_forever=info['playtime_forever'],
+                playtime_2weeks=info.get('playtime_2weeks') or 0,
+                lastplay=info['rtime_last_played']
+            )
 
             gameinfo_templates.append(gameinfo)
 
