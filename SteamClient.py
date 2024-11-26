@@ -3,6 +3,8 @@ from .. import loader, utils
 from steam_web_api import Steam
 from datetime import datetime
 import logging
+import typing
+from typing import Union
 
 """
     ███    ███ ██    ██ ██████  ██    ██ ██       ██████  ███████ ███████
@@ -90,6 +92,12 @@ class SteamClient(loader.Module):
     def resolve_id(self, username):
         data = self.steam.users.search_user(username)
         return data["player"]["steamid"]
+    
+    def get_user_data(self, username=Union[bool, str], uid:Union[int, bool]=0, by_id: Union[bool, str]=None):
+        if by_id:
+            return self.steam.users.get_user_details(uid)["player"]
+        else:
+            return self.steam.users.search_user(username)["player"]
 
     @loader.command(
         ru_doc=" [Юзернейм] Найти пользователя (--id поиск по id)"
@@ -100,17 +108,23 @@ class SteamClient(loader.Module):
 
         user = args[0]
 
-        userdata = None
-        if "--id" in args:
-            userdata = self.steam.users.get_user_details(int(user))["player"]
-            level = self.steam.users.get_user_steam_level(int(user))["player_level"]
-            vacdata = self.steam.users.get_player_bans(int(user))["players"][0]
+        if not args:
+            return await utils.answer(message, "noargs")
 
-        else:
-            userdata = self.steam.users.search_user(user)["player"]
-            uid = self.resolve_id(user)
-            level = self.steam.users.get_user_steam_level(uid)["player_level"]
-            vacdata = self.steam.users.get_player_bans(uid)["players"][0]
+        userdata = None
+        try:
+            if "--id" in args:
+                userdata = self.get_user_data(by_id=True, uid=int(user))["player"]
+                level = self.steam.users.get_user_steam_level(int(user))["player_level"]
+                vacdata = self.steam.users.get_player_bans(int(user))["players"][0]
+
+            else:
+                userdata = self.get_user_data(user)
+                uid = self.resolve_id(user)
+                level = self.steam.users.get_user_steam_level(uid)["player_level"]
+                vacdata = self.steam.users.get_player_bans(uid)["players"][0]
+        except ValueError:
+            return await utils.answer(message, "this user not exist / no search results")
 
         
         vacinfo = self.strings["vac_ban"].format(
@@ -145,15 +159,20 @@ class SteamClient(loader.Module):
         args = utils.get_args_raw(message).split()
 
         user = args[0]
-        
-        if "--id" in args:
-            userdata = self.steam.users.get_user_details(int(user))["player"]
-            vacdata = self.steam.users.get_player_bans(int(user))["players"][0]
 
-        else:
-            userdata = self.steam.users.search_user(user)["player"]
-            uid = self.resolve_id(user)
-            vacdata = self.steam.users.get_player_bans(uid)["players"][0]
+        if not args:
+            return await utils.answer(message, "noargs")
+        try:
+            if "--id" in args:
+                userdata = self.get_user_data(by_id=True, uid=int(user))["player"]
+                vacdata = self.steam.users.get_player_bans(int(user))["players"][0]
+
+            else:
+                userdata = self.get_user_data(user)
+                uid = self.resolve_id(user)
+                vacdata = self.steam.users.get_player_bans(uid)["players"][0]
+        except ValueError:
+            return await utils.answer(message, "this user not exist / no search results")
         
         vacinfo = self.strings["vac_ban"].format(
             vacbanned=vacdata["VACBanned"],
@@ -161,6 +180,7 @@ class SteamClient(loader.Module):
             dayslastvac=vacdata["DaysSinceLastBan"],
             numberofgamebans=vacdata["NumberOfGameBans"]
         )
+
         vactitle = self.strings["vac_ban_title"]
         await utils.answer(
             message, 
@@ -176,22 +196,21 @@ class SteamClient(loader.Module):
         args = utils.get_args_raw(message).split()
 
         user = args[0]
-        
-        if "--id" in args:
-            userdata = self.steam.users.get_user_details(int(user))["player"]
-            gamedata = self.steam.users.get_owned_games(user)['games']
 
-        else:
-            userdata = self.steam.users.search_user(user)["player"]
-            uid = self.resolve_id(user)
-            gamedata = self.steam.users.get_owned_games(uid)['games']
+        if not args:
+            return await utils.answer(message, "noargs")
         
-        # инфо о играх vacinfo = self.strings["vac_ban"].format(
-            #vacbanned=vacdata["VACBanned"],
-            #numberofvacbans=vacdata["NumberOfVACBans"],
-            #dayslastvac=vacdata["DaysSinceLastBan"],
-            #numberofgamebans=vacdata["NumberOfGameBans"]
-        #)
+        try:
+            if "--id" in args:
+                userdata = self.get_user_data(by_id=True, uid=int(user))["player"]
+                gamedata = self.steam.users.get_owned_games(user)['games']
+
+            else:
+                userdata = self.get_user_data(user)
+                uid = self.resolve_id(user)
+                gamedata = self.steam.users.get_owned_games(uid)['games']
+        except ValueError:
+            return await utils.answer(message, "this user not exist / no search results")
 
         gameinfo_templates = [] 
         for info in gamedata:
@@ -203,9 +222,6 @@ class SteamClient(loader.Module):
             )
 
             gameinfo_templates.append(gameinfo)
-
-        print(gameinfo)
-        logger.info(gameinfo.join('\n'))
     
         await utils.answer(
             message, 
