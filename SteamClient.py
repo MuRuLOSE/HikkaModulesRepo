@@ -1,10 +1,13 @@
-from hikkatl.types import Message
+import steam_web_api.steam_types
+from telethon.types import Message
+from telethon import TelegramClient
 from .. import loader, utils
 from steam_web_api import Steam
+import steam_web_api
 from datetime import datetime
 import logging
-import typing
 from typing import Union
+import asyncio
 
 """
     ███    ███ ██    ██ ██████  ██    ██ ██       ██████  ███████ ███████
@@ -39,16 +42,21 @@ class SteamClient(loader.Module):
         "\n<emoji document_id=5872829476143894491>🚫</emoji> <b>VAC-BAN INFO:</b> {vacinfo}"
         "\n<emoji document_id=5967412305338568701>📅</emoji> <b>Registration date:</b> <code>{registration_date}</code>",
         "api_key_updated": "<emoji document_id=5292226786229236118>🔄</emoji> <b>API key has been updated</b>",
-        "vac_ban": "\n    <b>VACBanned</b>: <code>{vacbanned}</code>"
-        "\n    <b>Number of VAC-BANs</b>: <code>{numberofvacbans}</code>"
-        "\n    <b>Days since last VAC-BAN</b>: <code>{dayslastvac}</code>"
-        "\n    <b>Number of game bans</b>: <code>{numberofgamebans}</code>",
+        "vac_ban": (
+            "\n    <b>VACBanned</b>: <code>{vacbanned}</code>"
+            "\n    <b>Number of VAC-BANs</b>: <code>{numberofvacbans}</code>"
+            "\n    <b>Days since last VAC-BAN</b>: <code>{dayslastvac}</code>"
+            "\n    <b>Number of game bans</b>: <code>{numberofgamebans}</code>"
+        ),
         "vac_ban_title": "<b>Information about bans of</b> <code>{}</code>:",
         "game_info_title": "<b>Information about games of</b> <code>{}</code>",
-        "game_info_template": "\n    <b>Name:</b> <code>{name}</code>"
-        "\n    <b>Total playtime:</b> <code>{playtime_forever}</code>minutes"
-        "\n    <b>Played in the last two weeks:</b> <code>{playtime_2weeks}</code>minutes"
-        "\n    <b>Last launch:</b> <code>{lastplay}</code>",
+        "game_info_template": (
+            "\n    <b>Name:</b> <code>{name}</code>"
+            "\n    <b>Total playtime:</b> <code>{playtime_forever}</code>minutes"
+            "\n    <b>Played in the last two weeks:</b> <code>{playtime_2weeks}</code>minutes"
+            "\n    <b>Last launch:</b> <code>{lastplay}</code>"
+        ),
+        "widget": "<b>{nickname}</b> currently playing in <b>{gamename}</b>",
     }
 
     strings_ru = {
@@ -59,27 +67,41 @@ class SteamClient(loader.Module):
         "\n<emoji document_id=5872829476143894491>🚫</emoji> <b>VAC-BAN INFO:</b> {vacinfo}"
         "\n<emoji document_id=5967412305338568701>📅</emoji> <b>Дата регистрации:</b> <code>{registration_date}</code>",
         "api_key_updated": "<emoji document_id=5292226786229236118>🔄</emoji> <b>API ключ был обновлён</b>",
-        "vac_ban": "\n    <b>VACBanned</b>: <code>{vacbanned}</code>"
-        "\n    <b>Число VAC-BANов</b>: <code>{numberofvacbans}</code>"
-        "\n    <b>Дни с последнего VAC-BANа</b>: <code>{dayslastvac}</code>"
-        "\n    <b>Число игровых банов</b>: <code>{numberofgamebans}</code>",
+        "vac_ban": (
+            "\n    <b>VACBanned</b>: <code>{vacbanned}</code>"
+            "\n    <b>Число VAC-BANов</b>: <code>{numberofvacbans}</code>"
+            "\n    <b>Дни с последнего VAC-BANа</b>: <code>{dayslastvac}</code>"
+            "\n    <b>Число игровых банов</b>: <code>{numberofgamebans}</code>"
+        ),
         "vac_ban_title": "<b>Информация о банах</b> <code>{}</code>:",
         "game_info_title": "<b>Информация о играх</b> <code>{}</code>",
-        "game_info_template": "\n    <b>Название:</b> <code>{name}</code>"
-        "\n    <b>Наиграно всего:</b> <code>{playtime_forever}</code>мин"
-        "\n    <b>Наиграно за последние 2 недели:</b> <code>{playtime_2weeks}</code>мин"
-        "\n    <b>Последний запуск:</b> <code>{lastplay}</code>",
+        "game_info_template": (
+            "\n    <b>Название:</b> <code>{name}</code>"
+            "\n    <b>Наиграно всего:</b> <code>{playtime_forever}</code>мин"
+            "\n    <b>Наиграно за последние 2 недели:</b> <code>{playtime_2weeks}</code>мин"
+            "\n    <b>Последний запуск:</b> <code>{lastplay}</code>"
+        ),
     }
 
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "apikey",
-                "Here's your api key",
-                "About API key: https://steamcommunity.com/dev/apikey",
+                "aabbccddeeff1252345234",
+                lambda: (
+                    "Here's your api key"
+                    "About API key: https://steamcommunity.com/dev/apikey"
+                ),
                 validator=loader.validators.Hidden(),
-            )
+            ),
+            loader.ConfigValue(
+                "steamid",
+                0,
+                lambda: "Your steamid for widgets and other things",
+                validator=loader.validators.Integer(),
+            ),
         )
+        self._widget_info = {"msgid": 0, "groupid": 0}
         self.debug = False
 
     async def client_ready(self, db, client):
@@ -231,6 +253,87 @@ class SteamClient(loader.Module):
             response=self.strings["game_info_title"].format(userdata["personaname"])
             + "\n\n".join(gameinfo_templates),
         )
+
+    @loader.loop(autostart=True, interval=60)
+    async def updatewidget(self):
+        if 0 not in self._widget_info.values():
+            gameid = self.get_user_data(by_id=True, uid=self.config["steamid"]).get(
+                "gameid"
+            )
+            gamename = self.get_user_data(by_id=True, uid=self.config["steamid"]).get(
+                "gameextrainfo"
+            )
+            await self.client.edit_message(
+                self._widget_info["groupid"],
+                self._widget_info["msgid"],
+                self.strings["widget"].format(
+                    nickname=self.get_user_data(by_id=True, uid=self.config["steamid"])[
+                        "personaname"
+                    ],
+                    gamename=(
+                        f"<a href='store.steampowered.com/app/{gameid}'>{gamename}</a>"
+                        if gameid
+                        else "nothing."
+                    ),
+                ),
+            )
+
+    @loader.command()
+    async def setwidgetsteam(self, message: Message):
+        """- Reply to message what need to be widget (--reset to remove widget)"""
+
+        args = utils.get_args_raw(message)
+
+        await utils.answer(
+            message, "wait pls..."
+        )  # into self.strings (translate description) and wait in all modules
+
+        if self.config["steamid"] == 0:
+            return await utils.answer(message, "no steamid in cfg")
+
+        if not args:
+
+            reply = await message.get_reply_message()
+            msgid = reply.id
+            chid = reply.chat_id
+
+            self._widget_info["msgid"] = msgid
+            self._widget_info["groupid"] = chid
+
+            await utils.answer(
+                message,
+                "Info collected, message delete in 5 seconds, soon this message edit in widget",
+            )
+
+            await asyncio.sleep(5)
+
+            await message.delete()
+
+            gameid = self.get_user_data(by_id=True, uid=self.config["steamid"]).get(
+                "gameid"
+            )
+
+            gamename = self.get_user_data(by_id=True, uid=self.config["steamid"]).get(
+                "gameextrainfo"
+            )
+
+            await self.client.edit_message(
+                self._widget_info["groupid"],
+                self._widget_info["msgid"],
+                self.strings["widget"].format(
+                    nickname=self.get_user_data(by_id=True, uid=self.config["steamid"])[
+                        "personaname"
+                    ],
+                    gamename=(
+                        f"<a href='store.steampowered.com/app/{gameid}'>{gamename}</a>"
+                        if gameid
+                        else "nothing."
+                    ),
+                ),
+            )
+        else:
+            self._widget_info["msgid"] = 0
+            self._widget_info["groupid"] = 0
 
     @loader.command()
     async def execsteamcode(self, message: Message):
