@@ -106,6 +106,8 @@ class SteamClient(loader.Module):
 
     async def client_ready(self, db, client):
         self.steam = Steam(self.config["apikey"])
+        self.msgid = self.get("msgid", 0)
+        self.groupid = self.get("groupid", 0)
 
     def resolve_id(self, username):
         data = self.steam.users.search_user(username)
@@ -256,7 +258,7 @@ class SteamClient(loader.Module):
 
     @loader.loop(autostart=True, interval=60)
     async def updatewidget(self):
-        if 0 not in self._widget_info.values():
+        if 0 not in list(self.groupid, self.msgid):
             gameid = self.get_user_data(by_id=True, uid=self.config["steamid"]).get(
                 "gameid"
             )
@@ -297,8 +299,8 @@ class SteamClient(loader.Module):
             msgid = reply.id
             chid = reply.chat_id
 
-            self._widget_info["msgid"] = msgid
-            self._widget_info["groupid"] = chid
+            self.set("msgid", msgid)
+            self.set("groupid", chid)
 
             await utils.answer(
                 message,
@@ -318,8 +320,8 @@ class SteamClient(loader.Module):
             )
 
             await self.client.edit_message(
-                self._widget_info["groupid"],
-                self._widget_info["msgid"],
+                self.groupid,
+                self.msgid,
                 self.strings["widget"].format(
                     nickname=self.get_user_data(by_id=True, uid=self.config["steamid"])[
                         "personaname"
@@ -332,8 +334,8 @@ class SteamClient(loader.Module):
                 ),
             )
         else:
-            self._widget_info["msgid"] = 0
-            self._widget_info["groupid"] = 0
+            self.set("msgid", 0)
+            self.set("groupid", 0)
 
     @loader.command()
     async def execsteamcode(self, message: Message):
