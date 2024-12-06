@@ -256,9 +256,9 @@ class SteamClient(loader.Module):
             + "\n\n".join(gameinfo_templates),
         )
 
-    @loader.loop(autostart=True, interval=60)
+    @loader.loop(autostart=True, interval=10)
     async def updatewidget(self):
-        if 0 not in list(self.groupid, self.msgid):
+        if 0 not in [self.groupid, self.msgid]:
             gameid = self.get_user_data(by_id=True, uid=self.config["steamid"]).get(
                 "gameid"
             )
