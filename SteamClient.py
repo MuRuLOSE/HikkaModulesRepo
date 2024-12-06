@@ -346,7 +346,10 @@ class SteamClient(loader.Module):
                 "even if you get into the code and enable debug-mode, all responsibility for actions with this command is yours.",
             )
         else:
-            environment = {"client": self.steam}
+            environment = {
+                "client": self.steam,
+                "widget_info": self._widget_info
+                }
             args = utils.get_args_raw(message)
 
             await utils.answer(message, str(eval(args, environment)))
