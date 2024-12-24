@@ -32,7 +32,7 @@ from pytubefix.exceptions import BotDetection
 # requires: pytubefix
 
 logger = logging.getLogger("YoutubeDL-BETA")
-__version__ = (1, 0, 3)
+__version__ = (1, 0, 4)
 
 
 # It is necessary for auto update of the library, because it is frequently updated (for now, deprecated, not needed)
@@ -74,7 +74,8 @@ class YoutubeDLB(loader.Module):
 
     strings = {"name": "YoutubeDLB"}
 
-    # todo: token support
+    # todo: token support (PoToken)
+    # auto generator, manually
 
     @loader.command()
     async def videodl(self, message: Message):
@@ -88,7 +89,7 @@ class YoutubeDLB(loader.Module):
             )
 
         else:
-            youtube = YouTube(args, use_po_token=True)
+            youtube = YouTube(args)
 
             with tempfile.TemporaryDirectory() as path:
                 stream = await utils.run_sync(youtube.streams.get_highest_resolution())
