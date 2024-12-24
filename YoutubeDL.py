@@ -32,7 +32,7 @@ from pytubefix.exceptions import BotDetection
 # requires: pytubefix
 
 logger = logging.getLogger("YoutubeDL-BETA")
-__version__ = (1, 0, 0)
+__version__ = (1, 0, 3)
 
 
 # It is necessary for auto update of the library, because it is frequently updated (for now, deprecated, not needed)
