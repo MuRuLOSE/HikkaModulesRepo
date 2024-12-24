@@ -1,11 +1,13 @@
 import asyncio
 import logging
-from pytubefix import YouTube
-import tempfile 
+import tempfile
 import os
 
 from telethon.types import Message
 from .. import loader, utils
+
+from pytubefix import YouTube
+from pytubefix.exceptions import BotDetection
 
 
 """
@@ -72,21 +74,30 @@ class YoutubeDLB(loader.Module):
 
     strings = {"name": "YoutubeDLB"}
 
+    # todo: token support
+
     @loader.command()
     async def videodl(self, message: Message):
         """[link] - Download video"""
         args = utils.get_args_raw(message)
 
         if not args:
-            await utils.answer(message, "no arguments, use this link for example: https://www.youtube.com/watch?v=RM4Ue8Xy55c")
+            await utils.answer(
+                message,
+                "no arguments, use this link for example: https://www.youtube.com/watch?v=RM4Ue8Xy55c",
+            )
 
-        else:
-            youtube = YouTube(args)
+        youtube = YouTube(args, use_po_token=True)
 
-            with tempfile.TemporaryDirectory() as path:
-                await utils.answer(message, "Please, wait.")
-                youtube.streams.first().download(
-                    path, "/video.mp4"
+        with tempfile.TemporaryDirectory() as path:
+            stream = await utils.run_sync(youtube.streams.get_highest_resolution())
+
+            try:
+                await utils.run_sync(stream.download(path, "/video.mp4"))
+            except BotDetection:
+                await utils.answer(
+                    message,
+                    "Youtube recognize in you bot, so, try use PoToken (not ready, so nevermind)",
                 )
 
-                await utils.answer_file(message, path + "/video.mp4")
+            await utils.answer_file(message, path + "/video.mp4")
