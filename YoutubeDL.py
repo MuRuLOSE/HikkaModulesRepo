@@ -80,12 +80,13 @@ class YoutubeDLB(loader.Module):
         if not args:
             await utils.answer(message, "no arguments, use this link for example: https://www.youtube.com/watch?v=RM4Ue8Xy55c")
 
-        youtube = YouTube(args)
+        else:
+            youtube = YouTube(args)
 
-        with tempfile.TemporaryDirectory() as path:
-            await utils.answer(message, "Please, wait.")
-            youtube.streams.first().download(
-                path, "/video.mp4"
-            )
+            with tempfile.TemporaryDirectory() as path:
+                await utils.answer(message, "Please, wait.")
+                youtube.streams.first().download(
+                    path, "/video.mp4"
+                )
 
-            await utils.answer_file(message, path + "/video.mp4")
+                await utils.answer_file(message, path + "/video.mp4")
