@@ -87,17 +87,18 @@ class YoutubeDLB(loader.Module):
                 "no arguments, use this link for example: https://www.youtube.com/watch?v=RM4Ue8Xy55c",
             )
 
-        youtube = YouTube(args, use_po_token=True)
+        else:
+            youtube = YouTube(args, use_po_token=True)
 
-        with tempfile.TemporaryDirectory() as path:
-            stream = await utils.run_sync(youtube.streams.get_highest_resolution())
+            with tempfile.TemporaryDirectory() as path:
+                stream = await utils.run_sync(youtube.streams.get_highest_resolution())
 
-            try:
-                await utils.run_sync(stream.download(path, "/video.mp4"))
-            except BotDetection:
-                await utils.answer(
-                    message,
-                    "Youtube recognize in you bot, so, try use PoToken (not ready, so nevermind)",
-                )
+                try:
+                    await utils.run_sync(stream.download(path, "/video.mp4"))
+                except BotDetection:
+                    await utils.answer(
+                        message,
+                        "Youtube recognize in you bot, so, try use PoToken (not ready, so nevermind)",
+                    )
 
-            await utils.answer_file(message, path + "/video.mp4")
+                await utils.answer_file(message, path + "/video.mp4")
