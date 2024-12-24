@@ -83,6 +83,7 @@ class YoutubeDLB(loader.Module):
         youtube = YouTube(args)
 
         with tempfile.TemporaryDirectory() as path:
+            await utils.answer(message, "Please, wait.")
             youtube.streams.first().download(
                 path, "/video.mp4"
             )
