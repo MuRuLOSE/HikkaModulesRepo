@@ -2,6 +2,7 @@ import asyncio
 import logging
 import tempfile
 import os
+from typing import Tuple
 
 from telethon.types import Message
 from .. import loader, utils
@@ -95,6 +96,22 @@ class YoutubeDLB(loader.Module):
                 False,
                 lambda: "Proxy status",
                 validator=loader.validators.Boolean()
+            ),
+            loader.ConfigValue(
+                "visitor_data",
+                "CgtJMmJMRmJHQmVPdyjI2La7BjIKCgJSVRIEGgAgKA%3D%3D",
+                lambda: "Visitor data to bypass bot protection from youtube (default data is invalid)"
+            ),
+            loader.ConfigValue(
+                "po_token",
+                "MnTtI005pJJQcu0bsVebvAKOcv6j6D46uKF_IUhRD4b62U6s6w9P_QX42G4LIITz-m6nE1u0yf9XD_7oJggQetqbzeftkhqcsS-Cs7UJCoRxuF9gZItXnSf-MUKCNmHJEHSkaTdKpkVNX06xVup89P3n87mQ2Q==",
+                lambda: "Visitor data to bypass bot protection from youtube (default data is invalid)"
+            ),
+            loader.ConfigValue(
+                "bypass_botprotector",
+                False,
+                lambda: "Allows bypassing bot verification with PoToken and Visitor Data",
+                validator=loader.validators.Boolean()
             )
         )
 
@@ -102,6 +119,11 @@ class YoutubeDLB(loader.Module):
             "https": self.config["proxy_https"], 
             "socks5": self.config["proxy_socks5"]
         }
+
+    def get_potoken(self) -> Tuple[str, str]:
+        visitor_data = self.config["visitor_data"]
+        po_token = self.config["po_token"]
+        return visitor_data, po_token
 
     @loader.command()
     async def videodl(self, message: Message):
@@ -118,6 +140,21 @@ class YoutubeDLB(loader.Module):
             try:
                 if self.config['proxy_enabled']:
                     youtube = YouTube(args, proxies=self.proxies)
+
+                elif self.config['bypass_botprotector']:
+                    youtube = YouTube(
+                        args,
+                        use_po_token=True,
+                        po_token_verifier=self.get_potoken()
+                    ) 
+
+                elif self.config['bypass_botprotector'] and self.config['proxy_enabled']:
+                    youtube = YouTube(
+                        args,
+                        use_po_token=True,
+                        po_token_verifier=self.get_potoken(),
+                        proxies=self.proxies
+                    ) 
                 else:
                     youtube = YouTube(args)
 
@@ -131,7 +168,7 @@ class YoutubeDLB(loader.Module):
                     except BotDetection:
                         await utils.answer(
                             message,
-                            "Youtube recognize in you bot, so, try use PoToken (not ready, so nevermind)",
+                            "Youtube recognize in you bot, so, try use PoToken, if you already use it, I cant do anything. Try use proxy, or change ip, idk",
                         )
 
                     await utils.answer_file(message, path + "/video.mp4")
@@ -139,5 +176,18 @@ class YoutubeDLB(loader.Module):
                 await utils.answer(
                     message, "Hmm, I don't think that link is quite right. \nDouble-check it."
                 )
+
+    @loader.command()
+    async def potoken(self, message: Message):
+        await utils.answer(
+            message,
+            ("Go to terminator.aeza.net, select Debian, paste this in terminal:"
+            "\n"
+            "\n<code>apt update -y; apt install docker.io -y; docker run -p 8080:8080 quay.io/invidious/youtube-trusted-session-generator:webserver</code>"
+            "\nAfter, copy the values from the JSON, paste in the corresponding values in the config."
+            '\n({ “updated”: 1735240777, “potoken”: “MnTtI005pJJJQcu0bsVebvAKOcv6j6D46uKF_IUhRD4b62U6s6w9P_QX42G4LIITz-m6nE1u0yf9XD_7oJggQetqbzeftkhqcsS-Cs7UJCoRxuF9gZItXnSf-MUKCNmHJEHSkaTdKpkVNX06xVup89P3n87mQ2Q==”, ‘visitor_data’: “CgtJMmJMRmJHQmVPdyjI2La7BjIKCgJSVRIEGgAgKA%3D%3D"} take potoken and visitor_data)'
+            "\n"
+            "\nThe data is disposable, so unfortunately you will have to do this every time you download a video.")
+        )
             
             
