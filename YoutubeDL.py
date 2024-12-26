@@ -7,7 +7,7 @@ from telethon.types import Message
 from .. import loader, utils
 
 from pytubefix import YouTube
-from pytubefix.exceptions import BotDetection
+from pytubefix.exceptions import BotDetection, RegexMatchError
 
 
 """
@@ -89,13 +89,21 @@ class YoutubeDLB(loader.Module):
             )
 
         else:
-            youtube = YouTube(args)
+            
+            try:
+                youtube = YouTube(args)
+            except RegexMatchError:
+                await utils.answer(
+                    message, "Hmm, I don't think that link is quite right. \nDouble-check it."
+                )
+            
+            await utils.answer(message, "Please, wait.")
 
             with tempfile.TemporaryDirectory() as path:
-                stream = await utils.run_sync(youtube.streams.get_highest_resolution())
+                stream = await utils.run_sync(youtube.streams.get_highest_resolution)
 
                 try:
-                    await utils.run_sync(stream.download(path, "/video.mp4"))
+                    await utils.run_sync(stream.download, path, "/video.mp4")
                 except BotDetection:
                     await utils.answer(
                         message,
