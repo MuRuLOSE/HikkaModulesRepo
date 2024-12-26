@@ -32,7 +32,7 @@ from pytubefix.exceptions import BotDetection, RegexMatchError
 # requires: pytubefix
 
 logger = logging.getLogger("YoutubeDL-BETA")
-__version__ = (1, 0, 4)
+__version__ = (1, 0, 5)
 
 
 # It is necessary for auto update of the library, because it is frequently updated (for now, deprecated, not needed)
@@ -89,7 +89,7 @@ class YoutubeDLB(loader.Module):
             )
 
         else:
-            
+
             try:
                 youtube = YouTube(args)
             except RegexMatchError:
