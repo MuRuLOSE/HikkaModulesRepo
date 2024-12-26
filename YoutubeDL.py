@@ -74,7 +74,7 @@ class YoutubeDLB(loader.Module):
 
     strings = {"name": "YoutubeDLB"}
 
-    # todo: token support (PoToken)
+    # todo: token support (PoToken), inline cancel button
     # auto generator, manually
 
     @loader.command()
@@ -89,25 +89,26 @@ class YoutubeDLB(loader.Module):
             )
 
         else:
-
             try:
                 youtube = YouTube(args)
+
+                await utils.answer(message, "Please, wait.")
+
+                with tempfile.TemporaryDirectory() as path:
+                    stream = await utils.run_sync(youtube.streams.get_highest_resolution)
+
+                    try:
+                        await utils.run_sync(stream.download, path, "/video.mp4")
+                    except BotDetection:
+                        await utils.answer(
+                            message,
+                            "Youtube recognize in you bot, so, try use PoToken (not ready, so nevermind)",
+                        )
+
+                    await utils.answer_file(message, path + "/video.mp4")
             except RegexMatchError:
                 await utils.answer(
                     message, "Hmm, I don't think that link is quite right. \nDouble-check it."
                 )
             
-            await utils.answer(message, "Please, wait.")
-
-            with tempfile.TemporaryDirectory() as path:
-                stream = await utils.run_sync(youtube.streams.get_highest_resolution)
-
-                try:
-                    await utils.run_sync(stream.download, path, "/video.mp4")
-                except BotDetection:
-                    await utils.answer(
-                        message,
-                        "Youtube recognize in you bot, so, try use PoToken (not ready, so nevermind)",
-                    )
-
-                await utils.answer_file(message, path + "/video.mp4")
+            
