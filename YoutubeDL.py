@@ -7,6 +7,7 @@ from telethon.types import Message
 from .. import loader, utils
 
 from pytubefix import YouTube
+from pytubefix.helpers import install_proxy
 from pytubefix.exceptions import BotDetection, RegexMatchError
 
 
@@ -77,6 +78,31 @@ class YoutubeDLB(loader.Module):
     # todo: token support (PoToken), inline cancel button
     # auto generator, manually
 
+    def __init__(self):
+        self.config = loader.ModuleConfig(
+            loader.ConfigValue(
+                "proxy_https",
+                "127.0.0.1:2081",
+                lambda: "You can use proxy for download videos (ip:port)"
+            ),
+            loader.ConfigValue(
+                "proxy_socks5",
+                "127.0.0.1:2080",
+                lambda: "You can use proxy for download videos (ip:port)"
+            ),
+            loader.ConfigValue(
+                "proxy_enabled",
+                False,
+                lambda: "Proxy status",
+                validator=loader.validators.Boolean()
+            )
+        )
+
+        self.proxies = {
+            "https": self.config["proxy_https"], 
+            "socks5": self.config["proxy_socks5"]
+        }
+
     @loader.command()
     async def videodl(self, message: Message):
         """[link] - Download video"""
@@ -90,7 +116,10 @@ class YoutubeDLB(loader.Module):
 
         else:
             try:
-                youtube = YouTube(args)
+                if self.config['proxy_enabled']:
+                    youtube = YouTube(args, proxies=self.proxies)
+                else:
+                    youtube = YouTube(args)
 
                 await utils.answer(message, "Please, wait.")
 
