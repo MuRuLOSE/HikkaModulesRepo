@@ -1,14 +1,14 @@
-import asyncio
+
 import logging
 import tempfile
-import os
+
 from typing import Tuple
 
 from telethon.types import Message
 from .. import loader, utils
 
 from pytubefix import YouTube
-from pytubefix.helpers import install_proxy
+# from pytubefix.helpers import install_proxy
 from pytubefix.exceptions import BotDetection, RegexMatchError
 
 
@@ -81,17 +81,17 @@ class YoutubeDLB(loader.Module):
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            loader.ConfigValue(
-                "proxy_url",
-                "http://127.0.0.1:8080",
-                lambda: "You can use proxy for download videos (maybe you can also use socks5)"
-            ),
-            loader.ConfigValue(
-                "proxy_enabled",
-                False,
-                lambda: "Proxy status",
-                validator=loader.validators.Boolean()
-            ),
+            # loader.ConfigValue(
+            #     "proxy_url",
+            #     "http://127.0.0.1:8080",
+            #     lambda: "You can use proxy for download videos (maybe you can also use socks5)"
+            # ),
+            # loader.ConfigValue(
+            #     "proxy_enabled",
+            #     False,
+            #     lambda: "Proxy status",
+            #     validator=loader.validators.Boolean()
+            # ),
             loader.ConfigValue(
                 "visitor_data",
                 "CgtJMmJMRmJHQmVPdyjI2La7BjIKCgJSVRIEGgAgKA%3D%3D",
@@ -128,32 +128,41 @@ class YoutubeDLB(loader.Module):
 
         else:
             try:
-                if self.config['proxy_enabled']:
-                    protocol = self.config['proxy_url'].split('://')[0]
-                    host = self.config['proxy_url'].split('://')[1]
+                # if self.config['proxy_enabled']:
+                #     protocol = self.config['proxy_url'].split('://')[0]
 
-                    proxies = {
-                        protocol: host
-                    }
+                #     # proxies = {
+                #     #     protocol: self.config['proxy_url']
+                #     # }
 
-                    youtube = YouTube(args, proxies=proxies)
+                #     proxies = {
+                #         'http': 'http://127.0.0.1:8080',
+                #         'https': 'https://127.0.0.1:8080'
+                #     }
+                #     logger.info(proxies)
 
-                elif self.config['bypass_botprotector']:
+                #     youtube = YouTube(args, proxies=proxies)
+                #     logger.info('proxy')
+
+                if self.config['bypass_botprotector']:
                     youtube = YouTube(
                         args,
                         use_po_token=True,
                         po_token_verifier=self.get_potoken()
                     ) 
+                    logger.info('bypass')
 
-                elif self.config['bypass_botprotector'] and self.config['proxy_enabled']:
-                    youtube = YouTube(
-                        args,
-                        use_po_token=True,
-                        po_token_verifier=self.get_potoken(),
-                        proxies=self.proxies
-                    ) 
+                # elif self.config['bypass_botprotector'] and self.config['proxy_enabled']:
+                #     youtube = YouTube(
+                #         args,
+                #         use_po_token=True,
+                #         po_token_verifier=self.get_potoken(),
+                #         proxies=self.proxies
+                #     ) 
+                #     logger.info('proxy + bypass')
                 else:
                     youtube = YouTube(args)
+                    logger.info("else")
 
                 await utils.answer(message, "Please, wait.")
 
@@ -184,7 +193,7 @@ class YoutubeDLB(loader.Module):
             "\nAfter, copy the values from the JSON, paste in the corresponding values in the config."
             '\n({ “updated”: 1735240777, “potoken”: “MnTtI005pJJJQcu0bsVebvAKOcv6j6D46uKF_IUhRD4b62U6s6w9P_QX42G4LIITz-m6nE1u0yf9XD_7oJggQetqbzeftkhqcsS-Cs7UJCoRxuF9gZItXnSf-MUKCNmHJEHSkaTdKpkVNX06xVup89P3n87mQ2Q==”, ‘visitor_data’: “CgtJMmJMRmJHQmVPdyjI2La7BjIKCgJSVRIEGgAgKA%3D%3D"} take potoken and visitor_data)'
             "\n"
-            "\nThe data is disposable, so unfortunately you will have to do this every time you download a video.")
+            "\nData and token are valid for 5-10 minutes, after that they won't work and need to be recreated.")
         )
             
             
