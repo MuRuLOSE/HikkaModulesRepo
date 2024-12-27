@@ -82,14 +82,9 @@ class YoutubeDLB(loader.Module):
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
-                "proxy_https",
-                "127.0.0.1:2081",
-                lambda: "You can use proxy for download videos (ip:port)"
-            ),
-            loader.ConfigValue(
-                "proxy_socks5",
-                "127.0.0.1:2080",
-                lambda: "You can use proxy for download videos (ip:port)"
+                "proxy_url",
+                "http://127.0.0.1:8080",
+                lambda: "You can use proxy for download videos (maybe you can also use socks5)"
             ),
             loader.ConfigValue(
                 "proxy_enabled",
@@ -115,9 +110,11 @@ class YoutubeDLB(loader.Module):
             )
         )
 
+        protocol = self.config['proxy_url'].split('://')[0]
+        host = self.config['proxy_url'].split('://')[1]
+
         self.proxies = {
-            "https": self.config["proxy_https"], 
-            "socks5": self.config["proxy_socks5"]
+            protocol: host
         }
 
     def get_potoken(self) -> Tuple[str, str]:
