@@ -110,13 +110,6 @@ class YoutubeDLB(loader.Module):
             )
         )
 
-        protocol = self.config['proxy_url'].split('://')[0]
-        host = self.config['proxy_url'].split('://')[1]
-
-        self.proxies = {
-            protocol: host
-        }
-
     def get_potoken(self) -> Tuple[str, str]:
         visitor_data = self.config["visitor_data"]
         po_token = self.config["po_token"]
@@ -136,7 +129,17 @@ class YoutubeDLB(loader.Module):
         else:
             try:
                 if self.config['proxy_enabled']:
-                    youtube = YouTube(args, proxies=self.proxies)
+                    protocol = self.config['proxy_url'].split('://')[0]
+                    host = self.config['proxy_url'].split('://')[1]
+
+                    logger.info(protocol)
+                    logger.info(host)
+
+                    proxies = {
+                        protocol: host
+                    }
+
+                    youtube = YouTube(args, proxies=proxies)
 
                 elif self.config['bypass_botprotector']:
                     youtube = YouTube(
