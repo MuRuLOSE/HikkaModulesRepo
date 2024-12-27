@@ -34,7 +34,7 @@ from pytubefix.exceptions import BotDetection, RegexMatchError
 # requires: pytubefix
 
 logger = logging.getLogger("YoutubeDL-BETA")
-__version__ = (1, 0, 5)
+__version__ = (1, 0, 6)
 
 
 # It is necessary for auto update of the library, because it is frequently updated (for now, deprecated, not needed)
@@ -131,9 +131,6 @@ class YoutubeDLB(loader.Module):
                 if self.config['proxy_enabled']:
                     protocol = self.config['proxy_url'].split('://')[0]
                     host = self.config['proxy_url'].split('://')[1]
-
-                    logger.info(protocol)
-                    logger.info(host)
 
                     proxies = {
                         protocol: host
