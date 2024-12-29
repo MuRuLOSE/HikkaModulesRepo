@@ -23,3 +23,4 @@ class K(loader.Module):
         """K"""
         raise Exception("Testing error handling")
         await utils.answer(message, "K")
+        # why
