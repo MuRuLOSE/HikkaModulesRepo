@@ -133,7 +133,6 @@ class YamiManager(loader.Module):
             async with self.client.conversation(self.bot, timeout=10) as conv:
                 try:
                     await conv.send_message("/start")
-                    res = await conv.get_response()
                 except asyncio.TimeoutError:
                     return await utils.answer(message, self.strings["dead"])
 
