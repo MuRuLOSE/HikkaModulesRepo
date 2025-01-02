@@ -55,7 +55,6 @@ class VKMusicAPI:
                     },
                 ) as response:
                     data: dict = await response.json()
-                    logger.info(data)
                     if data['response'].get('audio') is not None:
                         audio = 50, data['response']
                         return audio
