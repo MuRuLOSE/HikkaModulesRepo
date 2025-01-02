@@ -43,7 +43,7 @@ class VKMusicAPI:
 
     async def get_music(
         self,
-    ):  # errors:  10 token not set or no right 'доступ в любое время', 20 music are not playing, 30 API not asnwering
+    ):  # errors:  10 token not set or no right 'доступ в любое время', 20 music are not playing, 30 API not asnwering, 40, status mode, 50 sucsessfull,
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
@@ -54,17 +54,16 @@ class VKMusicAPI:
                         "v": "5.199",  # it's last version when module is released
                     },
                 ) as response:
-                    data = await response.json()
-                    try:
-                        audio = data["response"]["text"]
+                    data: dict = await response.json()
+                    logger.info(data)
+                    if data['response'].get('audio') is not None:
+                        audio = 50, data['response']
                         return audio
-                    except KeyError:
-                        try:
-                            error_code = data["error"]["error_code"]
-                            if error_code == 5:
-                                return 10
-                        except KeyError:
-                            return 20
+                    else:
+                        return 40, data['response']['text'] # VKontakte does not return audio in 
+                                                            # all cases (see https://dev.vk.com/ru/method/status.get).
+                                                            # But it displays it in the status, so we return the status, 
+                                                            # but if music is not playing, the user's status will be returned.
         except ServerTimeoutError:
              return 30
 
@@ -133,16 +132,19 @@ class VKMusic(loader.Module):
             return await utils.answer(message, self.strings["no_music"])
         elif music == 30:
             return await utils.answer(message, self.strings["server_error"])
+        elif music[0] == 50:
+            title = music[1]['audio']["title"]
+            artist = music[1]['audio']["artist"]
+            # url = music[1]['audio']["url"] # hikka dont want to work with this url, idk
+        elif music[0] == 40:
+            data = music[1].split('-')
+            title = data[1]
+            artist = data[0]
+        
 
-        title = music["title"]
-        artist = music["artist"]
-        url = music["url"]
-
-        await utils.answer_file(
+        await utils.answer(
             message,
-            file=url,
-            caption=self.strings["music_form"].format(title=title, artist=artist),
-            force_document=True,
+            self.strings["music_form"].format(title=title, artist=artist),
         )
 
     @loader.command(ru_doc=" - Инструкции для токена и пользовательского индетефикатора")
