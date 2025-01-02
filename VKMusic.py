@@ -47,12 +47,12 @@ class VKMusicAPI:
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
-                    "https://api.vk.com/method/status.get",
-                    params={
-                        "user_id": self.user_id,
-                        "access_token": self.token,
-                        "v": "5.199",  # it's last version when module is released
-                    },
+                    f"https://api.vk.com/method/status.get?user_id={self.user_id}&access_token={self.token}&v=5.199",
+                    # params={
+                    #     "user_id": self.user_id,
+                    #     "access_token": self.token,
+                    #     "v": "5.199",  # it's last version when module is released
+                    # },
                 ) as response:
                     data: dict = await response.json()
                     if data['response'].get('audio') is not None:
@@ -70,7 +70,7 @@ class VKMusicAPI:
 
 @loader.tds
 class VKMusic(loader.Module):
-    """Module for VK Music"""
+    """Module for VK Music (Remember, if your server is outside of Russia, errors can happen because VK does not want to give out track information due to restrictions)"""
 
     strings = {
         "name": "VKMusic",
@@ -83,6 +83,10 @@ class VKMusic(loader.Module):
         "instructions": (
             "<b>Go to <a href='https://vkhost.github.io/'>vkhost</a>, open settings, leave anytime access and status,"
             "and click get, copy the token and id, and then paste it in properly (in config)."
+        ),
+        "not_russia": (
+            "\n<emoji document_id=5303281542422865331>🇷🇺</emoji> VK gave not all information about" 
+            "the track because your userbot server is outside the Russian Federation."
         )
     }
 
@@ -98,6 +102,10 @@ class VKMusic(loader.Module):
             "<b>Зайдите на <a href='https://vkhost.github.io/'>vkhost</a>, откройте настройки, оставьте доступ в любое время и статус,"
             "и нажмите получить, скопируйте токен и айди, а дальше вставьте как положено (в конфиге).</b>"
         ),
+        "not_russia": (
+            "\n<emoji document_id=5303281542422865331>🇷🇺</emoji> ВК передал не всю информацию" 
+            "о треке т.к ваш сервер юзербота за пределами РФ."
+        )
     }
 
     def __init__(self):
@@ -144,7 +152,8 @@ class VKMusic(loader.Module):
 
         await utils.answer(
             message,
-            self.strings["music_form"].format(title=title, artist=artist),
+            self.strings["music_form"].format(title=title, artist=artist) +
+            self.strings['not_russia']
         )
 
     @loader.command(ru_doc=" - Инструкции для токена и пользовательского индетефикатора")
