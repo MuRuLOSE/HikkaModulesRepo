@@ -56,7 +56,7 @@ class VKMusicAPI:
                 ) as response:
                     data = await response.json()
                     try:
-                        audio = data["response"]["audio"]
+                        audio = data["response"]["text"]
                         return audio
                     except KeyError:
                         try:
@@ -66,7 +66,7 @@ class VKMusicAPI:
                         except KeyError:
                             return 20
         except ServerTimeoutError:
-            return 30
+             return 30
 
 
 @loader.tds
