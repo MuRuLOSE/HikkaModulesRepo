@@ -63,6 +63,7 @@ class VKMusicAPI:
                                                             # all cases (see https://dev.vk.com/ru/method/status.get).
                                                             # But it displays it in the status, so we return the status, 
                                                             # but if music is not playing, the user's status will be returned.
+                                                            # Also this is VK fault, not my fault
         except ServerTimeoutError:
              return 30
 
@@ -136,7 +137,8 @@ class VKMusic(loader.Module):
             artist = music[1]['audio']["artist"]
             # url = music[1]['audio']["url"] # hikka dont want to work with this url, idk
         elif music[0] == 40:
-            data = music[1].split('-')
+            data = music[1].split('—')
+            logger.info(data)
             title = data[1]
             artist = data[0]
         
