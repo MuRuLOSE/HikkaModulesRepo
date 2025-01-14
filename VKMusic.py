@@ -2,6 +2,8 @@ from typing import Union, Dict
 import aiohttp
 from aiohttp.client_exceptions import ServerTimeoutError
 import logging
+import tempfile
+import ffmpeg
 
 from telethon.types import Message
 from .. import loader, utils
@@ -22,7 +24,7 @@ from .. import loader, utils
 # meta banner: https://0x0.st/HYVT.jpg
 # meta desc: desc
 # meta developer: @BruhHikkaModules
-# requires: aiohttp
+# requires: aiohttp ffmpeg-python
 
 logger = logging.getLogger(__name__)
 
@@ -143,18 +145,34 @@ class VKMusic(loader.Module):
         elif music[0] == 50:
             title = music[1]['audio']["title"]
             artist = music[1]['audio']["artist"]
-            # url = music[1]['audio']["url"] # hikka dont want to work with this url, idk
+            url = music[1]['audio']["url"] # hikka dont want to work with this url, idk
+
+            with tempfile.TemporaryDirectory() as path:
+                (
+                    ffmpeg
+                    .input(url)
+                    .output(path + '/index.mp3', format='mp3')
+                    .run()
+                )
+
+                # todo: add tags
+                await utils.answer_file(
+                    message,
+                    file=path + '/index.mp3',
+                    caption=self.strings["music_form"].format(title=title, artist=artist) +
+                    self.strings['not_russia'],
+                )
+
         elif music[0] == 40:
             data = music[1].split('—')
             title = data[1]
             artist = data[0]
-        
 
-        await utils.answer(
-            message,
-            self.strings["music_form"].format(title=title, artist=artist) +
-            self.strings['not_russia']
-        )
+            await utils.answer(
+                message,
+                self.strings["music_form"].format(title=title, artist=artist) +
+                self.strings['not_russia'] + '\n\nMusic file is unavailable (sorry)'
+            )
 
     @loader.command(ru_doc=" - Инструкции для токена и пользовательского индетефикатора")
     async def vkmtoken(self, message: Message):
