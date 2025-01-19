@@ -19,7 +19,7 @@ import aiohttp
 # 🔒      Licensed under the GNU AGPLv3
 
 # meta banner: link
-# meta desc: desc
+# meta desc: Facts about numbers, dates, years, etc
 # meta developer: @BruhHikkaModules
 
 class NumberAPI:
@@ -84,7 +84,7 @@ class NumberAPI:
 
 @loader.tds
 class INumber(loader.Module):
-    """My module"""
+    """Facts about numbers, dates, years, etc"""
 
     strings = {
         "name": "INumber",
@@ -111,6 +111,7 @@ class INumber(loader.Module):
                 fact = await api.date_fact(random=True)
             case _:
                 return await utils.answer(
+                    message,
                     self.strings("type_not_exist")
                 )
 
