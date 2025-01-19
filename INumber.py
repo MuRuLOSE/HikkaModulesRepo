@@ -57,21 +57,21 @@ class NumberAPI:
 
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
-                return response.text()
+                return await response.text()
 
-    async def trivia_fact(self, number, random: bool=True):
+    async def trivia_fact(self, number="0", random: bool=True):
         if random:
             return self._request(random=True)
         else:
             return self._request(number=number)
 
-    async def date_fact(self, date, random: bool=True):
+    async def date_fact(self, date="31/12", random: bool=True):
         if random:
             return self._request(random=True, numbertype='date')
         else:
             return self._request(numbertype='date', number=date) # 1/12
 
-    async def math_fact(self, number, random: bool=True):
+    async def math_fact(self, number="1", random: bool=True):
         if random:
             return self._request(random=True, numbertype='math')
         else:
