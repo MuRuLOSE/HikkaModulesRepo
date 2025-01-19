@@ -1,7 +1,9 @@
 from telethon.types import Message
+from telethon.errors.rpcbaseerrors import BadRequestError
 from .. import loader, utils
 
 import aiohttp
+import logging
 
 """
     ███    ███ ██    ██ ██████  ██    ██ ██       ██████  ███████ ███████
@@ -22,6 +24,8 @@ import aiohttp
 # meta desc: Facts about numbers, dates, years, etc
 # meta developer: @BruhHikkaModules
 
+logger = logging.getLogger(__name__)
+
 class NumberAPI:
     async def _request(self, number: str='24', numbertype: str='trivia', random: bool=False):
         """Request function for NUMBER API
@@ -33,7 +37,7 @@ class NumberAPI:
             numbertype {str} -- Type of fact (math, trivia, or date) (default: {'trivia'})
             random {bool} -- Should be fact is random (default: {False})
         """
-        url = 'numbersapi.com/'
+        url = 'http://numberapi.com/'
         if random:
             url += 'random/'
             match numbertype:
@@ -61,25 +65,25 @@ class NumberAPI:
 
     async def trivia_fact(self, number="0", random: bool=True):
         if random:
-            return self._request(random=True)
+            return await self._request(random=True)
         else:
-            return self._request(number=number)
+            return await self._request(number=number)
 
     async def date_fact(self, date="31/12", random: bool=True):
         if random:
-            return self._request(random=True, numbertype='date')
+            return await self._request(random=True, numbertype='date')
         else:
-            return self._request(numbertype='date', number=date) # 1/12
+            return await self._request(numbertype='date', number=date) # 1/12
 
     async def math_fact(self, number="1", random: bool=True):
         if random:
-            return self._request(random=True, numbertype='math')
+            return await self._request(random=True, numbertype='math')
         else:
-            return self._request(numbertype='math', number=number)
+            return await self._request(numbertype='math', number=number)
 
     async def year_fact(self):
         """ONLY RANDOM!!!"""
-        return self._request(numbertype='year', random=True)
+        return await self._request(numbertype='year', random=True)
         
 
 @loader.tds
@@ -88,10 +92,12 @@ class INumber(loader.Module):
 
     strings = {
         "name": "INumber",
-        "type_not_exist": "<emoji document_id=5364261552515979078>😞</emoji> Fact type does not exist :("
+        "type_not_exist": "<emoji document_id=5364261552515979078>😞</emoji> Fact type does not exist :(",
+        "translation_failed": "Failed to translate"
     }
     strings_ru = {
-        "type_not_exist": "<emoji document_id=5364261552515979078>😞</emoji> Тип факта не существует :("
+        "type_not_exist": "<emoji document_id=5364261552515979078>😞</emoji> Тип факта не существует :(",
+        "translation_failed": "Не удалось перевести."
     }
 
     @loader.command()
@@ -115,13 +121,17 @@ class INumber(loader.Module):
                     self.strings("type_not_exist")
                 )
 
-        await utils.answer(
-            message,
-            await self._client.translate(
-                message.peer_id,
+        try:
+            await utils.answer(
                 message,
-                to_lang=self._db.get("hikka.translations", "lang")[0:2],
-                raw_text=fact,
-                entities=message.entities,
-            ),
-        )
+                await self._client.translate(
+                    message.peer_id,
+                    message,
+                    to_lang=self._db.get("hikka.translations", "lang")[0:2],
+                    raw_text=fact,
+                    entities=message.entities,
+                ),
+            )
+        except BadRequestError as e:
+            if 'TRANSLATE_REQ_QUOTA_EXCEEDED' in e:
+                await utils.answer(fact + self.strings('translation_failed'))
