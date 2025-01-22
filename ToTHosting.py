@@ -38,9 +38,6 @@ class TothostAPI:
     async def userbotstatus(self, ub_id):
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://api.tothost.live/api/v1/userbot/status?userbotID={ub_id}&token={self._token}") as response:
-                logger.info(dict(await response.json()))
-                logger.info(self._token)
-                logger.info(ub_id)
                 if dict(await response.json())['status'] == "active":
                     return True
                 else:
