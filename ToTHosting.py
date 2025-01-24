@@ -1,9 +1,9 @@
 from telethon.types import Message
+from telethon.tl.types import DocumentAttributeFilename
 from .. import loader, utils
 
 import logging
 import aiohttp
-import os
 
 """
     ███    ███ ██    ██ ██████  ██    ██ ██       ██████  ███████ ███████
@@ -30,11 +30,13 @@ class TothostAPI:
     def __init__(self, token):
         self._token = token
 
+
     async def logs(self, ub_id):
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://api.tothost.live/api/v1/userbot/get_logs?userbotID={ub_id}&token={self._token}") as response:
+                logger.info(bytes(await response.text(), encoding='utf-8'))
                 return bytes(await response.text(), encoding='utf-8')
-            
+
     async def userbotstatus(self, ub_id):
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://api.tothost.live/api/v1/userbot/status?userbotID={ub_id}&token={self._token}") as response:
@@ -42,7 +44,7 @@ class TothostAPI:
                     return True
                 else:
                     return False
-            
+
     async def userbotinfo(self, ub_id):
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://api.tothost.live/api/v1/userbot/userbot_info?userbotID={ub_id}&token={self._token}") as response:
@@ -59,6 +61,11 @@ class TothostAPI:
                     "time": f"{enddate['year']}-{enddate['month']}-{enddate['day']} {enddate['hour']}:{enddate['minute']}:{enddate['second']}"
                 }
                 return info
+
+    async def restart(self, ub_id):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"https://api.tothost.live/api/v1/userbot/restart?userbotID={ub_id}&token={self._token}") as response:
+                return True 
 
 
 
@@ -78,7 +85,8 @@ class ToTHosting(loader.Module):
             "\n<blockquote><b>{} Сервер: {}</b></blockquote>"
             "\n"
             "\n<blockquote><b>⏰ Подписка истекает: <code>{}</code></b></blockquote>"
-        )
+        ),
+        "wait": "<emoji document_id=6334358870701376795>⌛️</emoji> Подождите пожалуйста",
     }
 
     def __init__(self):
@@ -88,6 +96,12 @@ class ToTHosting(loader.Module):
                 "None",
                 lambda: "Получите ваш токен в: https://t.me/ToThosTing_bot (/get_token)",
                 validator=loader.validators.Hidden()
+            ),
+            loader.ConfigValue(
+                "defaultid",
+                123,
+                lambda: "Айди по-умолчанию",
+                validator=loader.validators.Hidden(loader.validators.Integer())
             )
         )
 
@@ -99,13 +113,19 @@ class ToTHosting(loader.Module):
         # self.get("token_ready", False) soon
         
         
-
     @loader.command()
-    async def tinfo(self, message: Message):
-        """ [id] - Get info about your userbot"""
+    async def tinfocmd(self, message: Message):
+        """ [id/None] - Get info about your userbot"""
         args = utils.get_args_raw(message)
 
+        if not args:
+            args = self.config['defaultid']
+        
+        await utils.answer(message, self.strings["wait"])
+
         data = await self.api.userbotinfo(ub_id=args)
+
+        
 
         await utils.answer(
             message,
@@ -120,18 +140,36 @@ class ToTHosting(loader.Module):
         )
 
     @loader.command()
-    async def tlogs(self, message: Message):
-        ''' [id] - Get logs of your userbot'''
+    async def tlogscmd(self, message: Message):
+        ''' [id/None] - Get logs of your userbot'''
         args = utils.get_args_raw(message)
+
+        if not args:
+            args = self.config['defaultid']
+
+        await utils.answer(message, self.strings["wait"])
 
         logs = await self.api.logs(ub_id=args)
 
-        with open("logs.html", "wb") as f:
-            f.write(logs)
-            await utils.answer_file(message, "logs.html" ,"<emoji document_id=5226512880362332956>📖</emoji> Here you go!")
-            filename = f.name
+        attributes = [
+            DocumentAttributeFilename("logs.html")
+        ]
 
-        os.remove(filename)
+        await utils.answer_file(message, logs,"<emoji document_id=5226512880362332956>📖</emoji> Here you go!", attributes=attributes)
+        
+    
+    @loader.command()
+    async def trestartcmd(self, message: Message):
+        ''' [id/None] - Restart the userbot'''
+
+        args = utils.get_args_raw(message)
+
+        if not args:
+            args = self.config['defaultid']
+
+        await utils.answer(message, self.strings["wait"])
+
+        await self.api.restart(args)
 
 
         
