@@ -34,7 +34,6 @@ class TothostAPI:
     async def logs(self, ub_id):
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://api.tothost.live/api/v1/userbot/get_logs?userbotID={ub_id}&token={self._token}") as response:
-                logger.info(bytes(await response.text(), encoding='utf-8'))
                 return bytes(await response.text(), encoding='utf-8')
 
     async def userbotstatus(self, ub_id):
