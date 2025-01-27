@@ -26,6 +26,31 @@ import aiohttp
 
 logger = logging.getLogger(__name__)
 
+
+class UserInfo:
+    def __init__(self, userbots, regdate, balance):
+        self.userbots = userbots
+        self.regdate = regdate
+        self.balance = balance
+
+
+    def __repr__(self):
+        return f"UserInfo(userbots={self.userbots}, regdate={self.regdate}, balance={self.balance})"
+
+class UserbotInfo:
+    def __init__(self, name, emojistatus, status, serveremoji, server, time):
+        self.name = name
+        self.emojistatus = emojistatus
+        self.status = status
+        self.serveremoji = serveremoji
+        self.server = server
+        self.time = time
+
+
+    def __repr__(self):
+        return f"UserbotInfo(name={self.name}, emojistatus={self.emojistatus}, status={self.status}, serveremoji={self.serveremoji}, server={self.server}, time={self.time})"
+
+
 class TothostAPI:
     def __init__(self, token):
         self._token = token
@@ -51,32 +76,34 @@ class TothostAPI:
                 ubstatus = await self.userbotstatus(ub_id)
                 enddate = data['endDate']
                 
-                info = {
-                    "userbot": data['name'],
-                    "emojistatus": "🟢" if ubstatus else "🔴",
-                    "status": "Включен" if ubstatus else "Выключен",
-                    "serveremoji": data['server']['emoji'],
-                    "server": data['server']['text'],
-                    "time": f"{enddate['year']}-{enddate['month']}-{enddate['day']} {enddate['hour']}:{enddate['minute']}:{enddate['second']}"
-                }
-                return info
+
+                name = data['name']
+                emojistatus = "🟢" if ubstatus else "🔴"
+                status ="Включен" if ubstatus else "Выключен"
+                serveremoji = data['server']['emoji']
+                server = data['server']['text']
+                time = f"{enddate['year']}-{enddate['month']}-{enddate['day']} {enddate['hour']}:{enddate['minute']}:{enddate['second']}"
+
+                return UserbotInfo(name, emojistatus, status, serveremoji, server, time)
 
     async def restart(self, ub_id):
         async with aiohttp.ClientSession() as session:
-            async with session.get(f"https://api.tothost.live/api/v1/userbot/restart?userbotID={ub_id}&token={self._token}") as response:
+            async with session.get(f"https://api.tothost.live/api/v1/userbot/restart?userbotID={ub_id}&token={self._token}"):
                 return True
 
 
     async def userinfo(self):
         async with aiohttp.ClientSession() as session:
-            async with session.get(f"https://api.tothost.live/api/v1/userbot/restart?token={self._token}") as response:
+            async with session.get(f"https://api.tothost.live/api/v1/user/user_info?token={self._token}") as response:
                 data = await response.json()
-                
-                userbots = [userbot['userbotID'] for userbot in data['userbots']]
+                logger.info(data)
+                userbots = [str(userbot['userbotID']) for userbot in data['userbots']]
 
                 regdate = data['registeredDate'][:10]
 
                 balance = data['balance']
+
+                return UserInfo(userbots, regdate, balance)
 
 
 @loader.tds
@@ -88,16 +115,16 @@ class ToTHosting(loader.Module):
         "userbot_info": (
             "<blockquote><b>🌟Информация о юзерботе🌟</b></blockquote>"
             "\n"
-            "\n<blockquote><b>🤖 Юзербот: {}</b></blockquote>"
+            "<blockquote><b>🤖 Юзербот: {}</b></blockquote>"
             "\n"
-            "\n<blockquote><b>{} Статус: {}</b></blockquote>"
+            "<blockquote><b>{} Статус: {}</b></blockquote>"
             "\n"
-            "\n<blockquote><b>{} Сервер: {}</b></blockquote>"
+            "<blockquote><b>{} Сервер: {}</b></blockquote>"
             "\n"
-            "\n<blockquote><b>⏰ Подписка истекает: <code>{}</code></b></blockquote>"
+            "<blockquote><b>⏰ Подписка истекает: <code>{}</code></b></blockquote>"
         ),
         "wait": "<emoji document_id=6334358870701376795>⌛️</emoji> Подождите пожалуйста",
-        "profileinfo": (
+        "userinfo": (
             "<blockquote><b>🌟 Информация о юзере 🌟</b></blockquote>"
             "\n"
             "<blockquote><b>🤖 Юзерботы: {}</b></blockquote>"
@@ -149,12 +176,12 @@ class ToTHosting(loader.Module):
         await utils.answer(
             message,
             self.strings['userbot_info'].format(
-                data['userbot'],
-                data['emojistatus'],
-                data['status'],
-                data['serveremoji'],
-                data['server'],
-                data['time']
+                data.name,
+                data.emojistatus,
+                data.status,
+                data.serveremoji,
+                data.server,
+                data.time
             )
         )
 
@@ -195,3 +222,16 @@ class ToTHosting(loader.Module):
     @loader.command()
     async def tuserinfo(self, message: Message):
         ''' - Info about user'''
+        
+        await utils.answer(message, self.strings["wait"])
+
+        userinfo = await self.api.userinfo()
+
+        await utils.answer(
+            message,
+            self.strings["userinfo"].format(
+                ' '.join(userinfo.userbots),
+                userinfo.balance,
+                userinfo.regdate
+            )
+        )
