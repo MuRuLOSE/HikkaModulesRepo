@@ -64,8 +64,19 @@ class TothostAPI:
     async def restart(self, ub_id):
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://api.tothost.live/api/v1/userbot/restart?userbotID={ub_id}&token={self._token}") as response:
-                return True 
+                return True
 
+
+    async def userinfo(self):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"https://api.tothost.live/api/v1/userbot/restart?token={self._token}") as response:
+                data = await response.json()
+                
+                userbots = [userbot['userbotID'] for userbot in data['userbots']]
+
+                regdate = data['registeredDate'][:10]
+
+                balance = data['balance']
 
 
 @loader.tds
@@ -86,6 +97,15 @@ class ToTHosting(loader.Module):
             "\n<blockquote><b>⏰ Подписка истекает: <code>{}</code></b></blockquote>"
         ),
         "wait": "<emoji document_id=6334358870701376795>⌛️</emoji> Подождите пожалуйста",
+        "profileinfo": (
+            "<blockquote><b>🌟 Информация о юзере 🌟</b></blockquote>"
+            "\n"
+            "<blockquote><b>🤖 Юзерботы: {}</b></blockquote>"
+            "\n"
+            "<blockquote><b>💸 Баланс: <code>{}</code></b></blockquote>"
+            "\n"
+            "<blockquote><b>🎂 Дата регистрации: {}</b></blockquote>"
+        )
     }
 
     def __init__(self):
@@ -172,3 +192,6 @@ class ToTHosting(loader.Module):
 
 
         
+    @loader.command()
+    async def tuserinfo(self, message: Message):
+        ''' - Info about user'''
