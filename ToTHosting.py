@@ -96,7 +96,6 @@ class TothostAPI:
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://api.tothost.live/api/v1/user/user_info?token={self._token}") as response:
                 data = await response.json()
-                logger.info(data)
                 userbots = [str(userbot['userbotID']) for userbot in data['userbots']]
 
                 regdate = data['registeredDate'][:10]
