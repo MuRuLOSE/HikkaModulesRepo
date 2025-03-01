@@ -3,7 +3,6 @@ import aiohttp
 from aiohttp.client_exceptions import ServerTimeoutError
 import logging
 import tempfile
-import ffmpeg
 from telethon.tl.types import Message
 from telethon import types
 from .. import loader, utils
@@ -114,9 +113,8 @@ class VKMusic(loader.Module):
             await self.client.delete_messages(bot_username, messages_to_delete)
             return None, None, None
 
-    @loader.command(ru_doc=" - Текущая песня или поиск через бота")
+    @loader.command(ru_doc=" - Текущая песня")
     async def vkmpnow(self, message: Message):
-        args = utils.get_args_raw(message)
         self._vkmusic = VKMusicAPI(str(self.config["user_id"]), str(self.config["token"]))
 
         music = await self._vkmusic.get_music()
@@ -126,20 +124,20 @@ class VKMusic(loader.Module):
             artist = music[1]['audio']["artist"]
             url = music[1]['audio']["url"]
 
-            with tempfile.TemporaryDirectory() as path:
-                input_file = f"{path}/temp.mp3"
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(url) as resp:
-                        with open(input_file, "wb") as f:
-                            f.write(await resp.read())
-                await utils.answer_file(
-                    message,
-                    file=input_file,
-                    caption=self.strings["music_form"].format(title=title, artist=artist)
-                )
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as resp:
+                    if resp.status == 200:
+                        audio_data = await resp.read()
+                        await utils.answer_file(
+                            message,
+                            file=audio_data,
+                            caption=self.strings["music_form"].format(title=title, artist=artist)
+                        )
+                    else:
+                        await utils.answer(message, self.strings["server_error"])
         elif music[0] == 40 or music[0] == 30:
             await utils.answer(message, self.strings["bot_searching"])
-            query = args if args else music[1] if music[0] == 40 else "current song"
+            query = music[1] if music[0] == 40 else "current song"
             title, artist, document = await self._get_music_from_bot(query)
 
             if document:
