@@ -9,10 +9,6 @@ from telethon import types
 from .. import loader, utils
 from telethon.utils import get_display_name
 
-"""
-    VKMusic с интеграцией Telegram-бота
-"""
-
 logger = logging.getLogger(__name__)
 
 class VKMusicAPI:
@@ -36,8 +32,6 @@ class VKMusicAPI:
 
 @loader.tds
 class VKMusic(loader.Module):
-    """Module for VK Music with Telegram bot fallback"""
-
     strings = {
         "name": "VKMusic",
         "no_music": "Music is not playing (not all music is displayed in the status).",
@@ -55,7 +49,8 @@ class VKMusic(loader.Module):
             "the track because your userbot server is outside the Russian Federation."
         ),
         "bot_searching": "Searching via Telegram bot...",
-        "bot_not_found": "Music not found via Telegram bot."
+        "bot_not_found": "Music not found via Telegram bot.",
+        "bot_start": "Bot requires /start, initializing..."
     }
 
     def __init__(self):
@@ -82,26 +77,45 @@ class VKMusic(loader.Module):
         self._vkmusic = VKMusicAPI(self.config["user_id"], self.config["token"])
 
     async def _get_music_from_bot(self, query: str):
-        """Interact with Telegram bot to get music"""
         bot_username = self.config["telegram_bot"]
+        messages_to_delete = []
         
         async with self.client.conversation(bot_username) as conv:
-            await conv.send_message(query)
-            response = await conv.get_response(timeout=30)
-            
-            if response.media and isinstance(response.media, types.MessageMediaDocument):
-                document = response.media.document
+            request = await conv.send_message(query)
+            messages_to_delete.append(request)
+
+            try:
+                response = await conv.get_response(timeout=10)
+                messages_to_delete.append(response)
+            except TimeoutError:
+                await conv.send_message("/start")
+                messages_to_delete.append(await conv.get_response(timeout=5))
+                await conv.send_message(query)
+                messages_to_delete.append(await conv.get_response(timeout=10))
+                response = messages_to_delete[-1]
+
+            if response.reply_markup and hasattr(response.reply_markup, "rows"):
+                music_response = await response.click(0)
+                file_response = await conv.get_response(timeout=10)
+                messages_to_delete.append(file_response)
+            else:
+                file_response = response
+
+            if file_response.media and isinstance(file_response.media, types.MessageMediaDocument):
+                document = file_response.media.document
                 for attr in document.attributes:
                     if isinstance(attr, types.DocumentAttributeAudio):
                         title = attr.title or "Unknown Title"
                         artist = attr.performer or "Unknown Artist"
+                        await self.client.delete_messages(bot_username, messages_to_delete)
                         return title, artist, document
+                await self.client.delete_messages(bot_username, messages_to_delete)
                 return None, None, document
+            await self.client.delete_messages(bot_username, messages_to_delete)
             return None, None, None
 
     @loader.command(ru_doc=" - Текущая песня или поиск через бота")
     async def vkmpnow(self, message: Message):
-        """ - Current song or search via bot"""
         args = utils.get_args_raw(message)
         self._vkmusic = VKMusicAPI(str(self.config["user_id"]), str(self.config["token"]))
 
@@ -146,5 +160,4 @@ class VKMusic(loader.Module):
 
     @loader.command(ru_doc=" - Инструкции для токена и пользовательского идентификатора")
     async def vkmtoken(self, message: Message):
-        """- Instructions for token and user ID"""
         await utils.answer(message, self.strings["instructions"])
