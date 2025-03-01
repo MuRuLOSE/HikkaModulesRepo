@@ -2,7 +2,6 @@ from typing import Union, Dict
 import aiohttp
 from aiohttp.client_exceptions import ServerTimeoutError
 import logging
-import tempfile
 from telethon.tl.types import Message
 from telethon import types
 from .. import loader, utils
@@ -128,9 +127,11 @@ class VKMusic(loader.Module):
                 async with session.get(url) as resp:
                     if resp.status == 200:
                         audio_data = await resp.read()
+                        file_name = f"{artist} - {title}.mp3".replace("/", "_").replace("\\", "_")
                         await utils.answer_file(
                             message,
                             file=audio_data,
+                            file_name=file_name,
                             caption=self.strings["music_form"].format(title=title, artist=artist)
                         )
                     else:
@@ -141,9 +142,11 @@ class VKMusic(loader.Module):
             title, artist, document = await self._get_music_from_bot(query)
 
             if document:
+                file_name = f"{artist or 'Unknown'} - {title or 'Unknown'}.mp3".replace("/", "_").replace("\\", "_")
                 await utils.answer_file(
                     message,
                     file=document,
+                    file_name=file_name,
                     caption=self.strings["music_form"].format(
                         title=title or "Unknown",
                         artist=artist or "Unknown"
