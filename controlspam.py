@@ -157,7 +157,6 @@ class ControlSpam(loader.Module):
             self.config["ids"][spam_id]["data"]["count"] += 1
             status = self.config["ids"][spam_id]["data"]["status"]
             text = self.config["ids"][spam_id]["data"]["text"]
-            self.config["ids"][spam_id]["data"]["text"]["count"] = sent
             await asyncio.sleep(args[1])
             if topic_id:
                 await self.client.send_message(message.chat_id, text, reply_to=topic_id)
