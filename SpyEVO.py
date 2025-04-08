@@ -34,6 +34,8 @@ from ..inline.types import InlineCall
 @loader.tds
 class SpyEVO(loader.Module):
     """Модуль для"""
+    def test_limoka():
+        pass # limoka 1.1.0 ?..
 
     strings = {
         "name": "SpyEVO",
