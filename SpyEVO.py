@@ -23,7 +23,7 @@ from ..inline.types import InlineCall
     ██      ██  ██████  ██   ██  ██████  ███████  ██████  ███████ ███████ 
 
 
-    SpyEVO
+    SpyEVOл
     📜 Licensed under the GNU AGPLv3	
 """
 
@@ -34,6 +34,8 @@ from ..inline.types import InlineCall
 @loader.tds
 class SpyEVO(loader.Module):
     """Модуль для"""
+    def test_limoka():
+        pass # limoka 1.1.0 ?..&рmmh
 
     strings = {
         "name": "SpyEVO",
