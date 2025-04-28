@@ -1,0 +1,16 @@
+name: Generating full.txt
+run-name: full.txt
+on: [push]
+jobs:
+  pre:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+      - run: git pull --force
+      - run: python3 autofull.py
+      - run: git add full.txt
+      - run: git commit full.txt
+      - run: git push full.txt
