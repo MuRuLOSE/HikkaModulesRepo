@@ -35,6 +35,7 @@ class InviteManager(loader.Module):
         "no_args": "<emoji document_id=5210952531676504517>❌</emoji> No arguments provided",
         "no_channel": "<emoji document_id=5210952531676504517>❌</emoji> Please specify a channel or use in a channel",
         "created": "<emoji document_id=5413334818047940135>✅</emoji> Invite link created: <code>{link}</code>",
+        "created_hidden": "<emoji document_id=5413334818047940135>✅</emoji> Invite link created (hidden)",
         "select_action": "Select an action for the invite link: <code>{link}</code>",
         "revoked": "<emoji document_id=5413334818047940135>✅</emoji> Invite link revoked",
         "select_expiry": "Select expiration period for the invite link: <code>{link}</code>",
@@ -45,12 +46,28 @@ class InviteManager(loader.Module):
         "invalid_limit": "<emoji document_id=5210952531676504517>❌</emoji> Invalid number for usage limit",
         "invalid_link": "<emoji document_id=5210952531676504517>❌</emoji> Invalid invite link",
         "chat_required": "<emoji document_id=5210952531676504517>❌</emoji> Please use this command in the target channel or specify the channel",
+        "failed_create": "<emoji document_id=5210952531676504517>❌</emoji> Failed to create invite link",
+        "failed_revoke": "<emoji document_id=5210952531676504517>❌</emoji> Failed to revoke link",
+        "failed_update_expiry": "<emoji document_id=5210952531676504517>❌</emoji> Failed to update expiry",
+        "failed_update_limit": "<emoji document_id=5210952531676504517>❌</emoji> Failed to update limit",
+        "close_btn": "Close",
+        "revoke_btn": "Revoke",
+        "set_expiry_btn": "Set Expiry",
+        "set_limit_btn": "Set Usage Limit",
+        "toggle_approval_btn": "Toggle Approval",
+        "cancel_btn": "Cancel",
+        "back_btn": "Back",
+        "approval_enabled": "<emoji document_id=5413334818047940135>✅</emoji> Approval required enabled",
+        "approval_disabled": "<emoji document_id=5413334818047940135>✅</emoji> Approval required disabled",
+        "enable_btn": "Enable",
+        "disable_btn": "Disable",
     }
 
     strings_ru = {
         "no_args": "<emoji document_id=5210952531676504517>❌</emoji> Аргументы не указаны",
         "no_channel": "<emoji document_id=5210952531676504517>❌</emoji> Укажите канал или используйте в канале",
         "created": "<emoji document_id=5413334818047940135>✅</emoji> Ссылка-приглашение создана: <code>{link}</code>",
+        "created_hidden": "<emoji document_id=5413334818047940135>✅</emoji> Ссылка-приглашение создана (скрыта)",
         "select_action": "Выберите действие для ссылки: <code>{link}</code>",
         "revoked": "<emoji document_id=5413334818047940135>✅</emoji> Ссылка отозвана",
         "select_expiry": "Выберите период действия для ссылки: <code>{link}</code>",
@@ -61,6 +78,21 @@ class InviteManager(loader.Module):
         "invalid_limit": "<emoji document_id=5210952531676504517>❌</emoji> Неверное число для лимита",
         "invalid_link": "<emoji document_id=5210952531676504517>❌</emoji> Неверная ссылка-приглашение",
         "chat_required": "<emoji document_id=5210952531676504517>❌</emoji> Используйте команду в целевом канале или укажите канал",
+        "failed_create": "<emoji document_id=5210952531676504517>❌</emoji> Не удалось создать ссылку-приглашение",
+        "failed_revoke": "<emoji document_id=5210952531676504517>❌</emoji> Не удалось отозвать ссылку",
+        "failed_update_expiry": "<emoji document_id=5210952531676504517>❌</emoji> Не удалось обновить дату истечения",
+        "failed_update_limit": "<emoji document_id=5210952531676504517>❌</emoji> Не удалось обновить лимит",
+        "close_btn": "Закрыть",
+        "revoke_btn": "Отозвать",
+        "set_expiry_btn": "Установить срок",
+        "set_limit_btn": "Установить лимит",
+        "toggle_approval_btn": "Вкл/Выкл одобрение",
+        "cancel_btn": "Отмена",
+        "back_btn": "Назад",
+        "approval_enabled": "<emoji document_id=5413334818047940135>✅</emoji> Вход по одобрению включён",
+        "approval_disabled": "<emoji document_id=5413334818047940135>✅</emoji> Вход по одобрению отключён",
+        "enable_btn": "Включить",
+        "disable_btn": "Отключить",
     }
 
     async def client_ready(self, client, db):
@@ -70,12 +102,20 @@ class InviteManager(loader.Module):
     @loader.command(ru_doc="Создать ссылку-приглашение для канала")
     async def createinvite(self, message: Message):
         """Create an invite link for a channel"""
-        args = utils.get_args_raw(message)
+        raw = utils.get_args_raw(message) or ""
+        parts = raw.split()
+        show_link = True
         chat = None
 
-        if args:
+        # support --hide or hide to avoid showing the link in response
+        if "--hide" in parts or "hide" in parts:
+            show_link = False
+            parts = [p for p in parts if p not in ("--hide", "hide")]
+
+        if parts:
+            chat_arg = " ".join(parts)
             try:
-                chat = await self.client.get_entity(args)
+                chat = await self.client.get_entity(chat_arg)
             except Exception as e:
                 logger.error(f"Failed to get entity: {e}")
                 await utils.answer(message, self.strings["no_channel"])
@@ -97,10 +137,13 @@ class InviteManager(loader.Module):
                 )
             )
             link = result.link
-            await utils.answer(message, self.strings["created"].format(link=link))
+            if show_link:
+                await utils.answer(message, self.strings["created"].format(link=link))
+            else:
+                await utils.answer(message, self.strings["created_hidden"])
         except Exception as e:
             logger.error(f"Error creating invite: {e}")
-            await utils.answer(message, "<emoji document_id=5210952531676504517>❌</emoji> Failed to create invite link")
+            await utils.answer(message, self.strings["failed_create"])
 
     @loader.command(ru_doc="[ссылка] [канал] - Редактировать ссылку-приглашение через инлайн-кнопки")
     async def editinvite(self, message: Message):
@@ -135,11 +178,15 @@ class InviteManager(loader.Module):
                 text=self.strings["select_action"].format(link=link),
                 reply_markup=[
                     [
-                        {"text": "Revoke", "callback": self._revoke_link, "args": (link, chat)},
-                        {"text": "Set Expiry", "callback": self._prompt_expiry, "args": (link, chat)},
+                        {"text": self.strings["revoke_btn"], "callback": self._revoke_link, "args": (link, chat)},
+                        {"text": self.strings["set_expiry_btn"], "callback": self._prompt_expiry, "args": (link, chat)},
                     ],
                     [
-                        {"text": "Set Usage Limit", "callback": self._prompt_limit, "args": (link, chat)},
+                        {"text": self.strings["set_limit_btn"], "callback": self._prompt_limit, "args": (link, chat)},
+                        {"text": self.strings["toggle_approval_btn"], "callback": self._prompt_approval, "args": (link, chat)},
+                    ],
+                    [
+                        {"text": self.strings["close_btn"], "action": "close"}
                     ]
                 ]
             )
@@ -158,13 +205,13 @@ class InviteManager(loader.Module):
             )
             await call.edit(
                 text=self.strings["revoked"],
-                reply_markup=[[{"text": "Back", "callback": self._back_to_menu, "args": (link, chat)}]]
+                reply_markup=[[{"text": self.strings["back_btn"], "callback": self._back_to_menu, "args": (link, chat)}]]
             )
         except Exception as e:
             logger.error(f"Error revoking link: {e}")
             await call.edit(
-                text="<emoji document_id=5210952531676504517>❌</emoji> Failed to revoke link",
-                reply_markup=[[{"text": "Back", "callback": self._back_to_menu, "args": (link, chat)}]]
+                text=self.strings["failed_revoke"],
+                reply_markup=[[{"text": self.strings["back_btn"], "callback": self._back_to_menu, "args": (link, chat)}]]
             )
 
     async def _prompt_expiry(self, call: InlineCall, link: str, chat):
@@ -181,7 +228,10 @@ class InviteManager(loader.Module):
                 ],
                 [
                     {"text": "No Expiry", "callback": self._set_expiry, "args": (link, chat, None, None)},
-                    {"text": "Cancel", "callback": self._back_to_menu, "args": (link, chat)},
+                    {"text": self.strings["cancel_btn"], "callback": self._back_to_menu, "args": (link, chat)},
+                ],
+                [
+                    {"text": self.strings["close_btn"], "action": "close"}
                 ]
             ]
         )
@@ -203,7 +253,7 @@ class InviteManager(loader.Module):
                 logger.error(f"Error calculating expiry: {e}")
                 await call.edit(
                     text=self.strings["invalid_date"],
-                    reply_markup=[[{"text": "Back", "callback": self._back_to_menu, "args": (link, chat)}]]
+                    reply_markup=[[{"text": self.strings["back_btn"], "callback": self._back_to_menu, "args": (link, chat)}]]
                 )
                 return
 
@@ -218,13 +268,13 @@ class InviteManager(loader.Module):
             expiry_text = expiry_date.strftime("%Y-%m-%d %H:%M") if expiry_date else "no expiry"
             await call.edit(
                 text=self.strings["updated_expiry"].format(date=expiry_text),
-                reply_markup=[[{"text": "Back", "callback": self._back_to_menu, "args": (link, chat)}]]
+                reply_markup=[[{"text": self.strings["back_btn"], "callback": self._back_to_menu, "args": (link, chat)}]]
             )
         except Exception as e:
             logger.error(f"Error setting expiry: {e}")
             await call.edit(
-                text="<emoji document_id=5210952531676504517>❌</emoji> Failed to update expiry",
-                reply_markup=[[{"text": "Back", "callback": self._back_to_menu, "args": (link, chat)}]]
+                text=self.strings["failed_update_expiry"],
+                reply_markup=[[{"text": self.strings["back_btn"], "callback": self._back_to_menu, "args": (link, chat)}]]
             )
 
     async def _prompt_limit(self, call: InlineCall, link: str, chat):
@@ -241,7 +291,10 @@ class InviteManager(loader.Module):
                 ],
                 [
                     {"text": "Unlimited", "callback": self._set_limit, "args": (link, chat, None)},
-                    {"text": "Cancel", "callback": self._back_to_menu, "args": (link, chat)},
+                    {"text": self.strings["cancel_btn"], "callback": self._back_to_menu, "args": (link, chat)},
+                ],
+                [
+                    {"text": self.strings["close_btn"], "action": "close"}
                 ]
             ]
         )
@@ -258,13 +311,13 @@ class InviteManager(loader.Module):
             limit_text = str(usage_limit) if usage_limit is not None else "unlimited"
             await call.edit(
                 text=self.strings["updated_limit"].format(limit=limit_text),
-                reply_markup=[[{"text": "Back", "callback": self._back_to_menu, "args": (link, chat)}]]
+                reply_markup=[[{"text": self.strings["back_btn"], "callback": self._back_to_menu, "args": (link, chat)}]]
             )
         except Exception as e:
             logger.error(f"Error setting limit: {e}")
             await call.edit(
-                text="<emoji document_id=5210952531676504517>❌</emoji> Failed to update limit",
-                reply_markup=[[{"text": "Back", "callback": self._back_to_menu, "args": (link, chat)}]]
+                text=self.strings["failed_update_limit"],
+                reply_markup=[[{"text": self.strings["back_btn"], "callback": self._back_to_menu, "args": (link, chat)}]]
             )
 
     async def _back_to_menu(self, call: InlineCall, link: str, chat):
@@ -272,11 +325,51 @@ class InviteManager(loader.Module):
             text=self.strings["select_action"].format(link=link),
             reply_markup=[
                 [
-                    {"text": "Revoke", "callback": self._revoke_link, "args": (link, chat)},
-                    {"text": "Set Expiry", "callback": self._prompt_expiry, "args": (link, chat)},
+                    {"text": self.strings["revoke_btn"], "callback": self._revoke_link, "args": (link, chat)},
+                    {"text": self.strings["set_expiry_btn"], "callback": self._prompt_expiry, "args": (link, chat)},
                 ],
                 [
-                    {"text": "Set Usage Limit", "callback": self._prompt_limit, "args": (link, chat)},
+                    {"text": self.strings["set_limit_btn"], "callback": self._prompt_limit, "args": (link, chat)},
+                    {"text": self.strings["toggle_approval_btn"], "callback": self._prompt_approval, "args": (link, chat)},
+                ],
+                [
+                    {"text": self.strings["close_btn"], "action": "close"}
                 ]
             ]
         )
+
+    async def _prompt_approval(self, call: InlineCall, link: str, chat):
+        await call.edit(
+            text=self.strings["select_action"].format(link=link),
+            reply_markup=[
+                [
+                    {"text": self.strings.get("enable_btn", "Enable"), "callback": self._set_approval, "args": (link, chat, True)},
+                    {"text": self.strings.get("disable_btn", "Disable"), "callback": self._set_approval, "args": (link, chat, False)},
+                ],
+                [
+                    {"text": self.strings["cancel_btn"], "callback": self._back_to_menu, "args": (link, chat)},
+                    {"text": self.strings["close_btn"], "action": "close"},
+                ]
+            ]
+        )
+
+    async def _set_approval(self, call: InlineCall, link: str, chat, value: bool):
+        try:
+            await self.client(
+                EditExportedChatInviteRequest(
+                    peer=chat,
+                    link=link,
+                    request_needed=value
+                )
+            )
+            text = self.strings["approval_enabled"] if value else self.strings["approval_disabled"]
+            await call.edit(
+                text=text,
+                reply_markup=[[{"text": self.strings["back_btn"], "callback": self._back_to_menu, "args": (link, chat)}]]
+            )
+        except Exception as e:
+            logger.error(f"Error setting approval: {e}")
+            await call.edit(
+                text=self.strings["failed_update_limit"],
+                reply_markup=[[{"text": self.strings["back_btn"], "callback": self._back_to_menu, "args": (link, chat)}]]
+            )
